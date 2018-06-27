@@ -1,0 +1,2426 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+
+    <meta name="author" content="Nikhil Wani">
+  <meta charset="utf-8">
+
+  <title>Profile report</title>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
+          integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script>
+      $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+      })
+
+      $("a[href^='#'].anchor").on('click', function(e) {
+
+       // prevent default anchor click behavior
+       e.preventDefault();
+
+       // store hash
+       var hash = this.hash;
+
+       // animate
+       $('html, body').animate({
+           scrollTop: $(hash).offset().top
+         }, 300, function(){
+
+           // when done, add hash to url
+           // (default click behaviour)
+           window.location.hash = hash;
+         });
+
+      });
+    </script>
+</head>
+
+<body>
+    <meta charset="UTF-8">
+
+<style>
+
+        .variablerow {
+            border: 1px solid #e1e1e8;
+            border-top: hidden;
+            padding-top: 2em;
+            padding-bottom: 2em;
+            padding-left: 1em;
+            padding-right: 1em;
+        }
+
+        .headerrow {
+            border: 1px solid #e1e1e8;
+            background-color: #f5f5f5;
+            padding: 2em;
+        }
+        .namecol {
+            margin-top: -1em;
+            overflow-x: auto;
+        }
+
+        .dl-horizontal dt {
+            text-align: left;
+            padding-right: 1em;
+            white-space: normal;
+        }
+
+        .dl-horizontal dd {
+            margin-left: 0;
+        }
+
+        .ignore {
+            opacity: 0.4;
+        }
+
+        .container.pandas-profiling {
+            max-width:975px;
+        }
+
+        .col-md-12 {
+            padding-left: 2em;
+        }
+
+        .indent {
+            margin-left: 1em;
+        }
+
+        .center-img {
+            margin-left: auto !important;
+            margin-right: auto !important;
+            display: block;
+        }
+
+        /* Table example_values */
+            table.example_values {
+                border: 0;
+            }
+
+            .example_values th {
+                border: 0;
+                padding: 0 ;
+                color: #555;
+                font-weight: 600;
+            }
+
+            .example_values tr, .example_values td{
+                border: 0;
+                padding: 0;
+                color: #555;
+            }
+
+        /* STATS */
+            table.stats {
+                border: 0;
+            }
+
+            .stats th {
+                border: 0;
+                padding: 0 2em 0 0;
+                color: #555;
+                font-weight: 600;
+            }
+
+            .stats tr {
+                border: 0;
+            }
+
+            .stats td{
+                color: #555;
+                padding: 1px;
+                border: 0;
+            }
+
+
+        /* Sample table */
+            table.sample {
+                border: 0;
+                margin-bottom: 2em;
+                margin-left:1em;
+            }
+            .sample tr {
+                border:0;
+            }
+            .sample td, .sample th{
+                padding: 0.5em;
+                white-space: nowrap;
+                border: none;
+
+            }
+
+            .sample thead {
+                border-top: 0;
+                border-bottom: 2px solid #ddd;
+            }
+
+            .sample td {
+                width:100%;
+            }
+
+
+        /* There is no good solution available to make the divs equal height and then center ... */
+            .histogram {
+                margin-top: 3em;
+            }
+        /* Freq table */
+
+            table.freq {
+                margin-bottom: 2em;
+                border: 0;
+            }
+            table.freq th, table.freq tr, table.freq td {
+                border: 0;
+                padding: 0;
+            }
+
+            .freq thead {
+                font-weight: 600;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+
+            }
+
+            td.fillremaining{
+                width:auto;
+                max-width: none;
+            }
+
+            td.number, th.number {
+                text-align:right ;
+            }
+
+        /* Freq mini */
+            .freq.mini td{
+                width: 50%;
+                padding: 1px;
+                font-size: 12px;
+
+            }
+            table.freq.mini {
+                 width:100%;
+            }
+            .freq.mini th {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                max-width: 5em;
+                font-weight: 400;
+                text-align:right;
+                padding-right: 0.5em;
+            }
+
+            .missing {
+                color: #a94442;
+            }
+            .alert, .alert > th, .alert > td {
+                color: #a94442;
+            }
+
+
+        /* Bars in tables */
+            .freq .bar{
+                float: left;
+                width: 0;
+                height: 100%;
+                line-height: 20px;
+                color: #fff;
+                text-align: center;
+                background-color: #337ab7;
+                border-radius: 3px;
+                margin-right: 4px;
+            }
+            .other .bar {
+                background-color: #999;
+            }
+            .missing .bar{
+                background-color: #a94442;
+            }
+            .tooltip-inner {
+                width: 100%;
+                white-space: nowrap;
+                text-align:left;
+            }
+
+            .extrapadding{
+                padding: 2em;
+            }
+
+            .pp-anchor{
+
+            }
+
+</style>
+
+<div class="container pandas-profiling">
+    <div class="row headerrow highlight">
+        <h1>Overview</h1>
+    </div>
+    <div class="row variablerow">
+    <div class="col-md-6 namecol">
+        <p class="h4">Dataset info</p>
+        <table class="stats" style="margin-left: 1em;">
+            <tbody>
+            <tr>
+                <th>Number of variables</th>
+                <td>11 </td>
+            </tr>
+            <tr>
+                <th>Number of observations</th>
+                <td>396 </td>
+            </tr>
+            <tr>
+                <th>Total Missing (%)</th>
+                <td>0.0% </td>
+            </tr>
+            <tr>
+                <th>Total size in memory</th>
+                <td>34.1 KiB </td>
+            </tr>
+            <tr>
+                <th>Average record size in memory</th>
+                <td>88.2 B </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-6 namecol">
+        <p class="h4">Variables types</p>
+        <table class="stats" style="margin-left: 1em;">
+            <tbody>
+            <tr>
+                <th>Numeric</th>
+                <td>2 </td>
+            </tr>
+            <tr>
+                <th>Categorical</th>
+                <td>9 </td>
+            </tr>
+            <tr>
+                <th>Boolean</th>
+                <td>0 </td>
+            </tr>
+            <tr>
+                <th>Date</th>
+                <td>0 </td>
+            </tr>
+            <tr>
+                <th>Text (Unique)</th>
+                <td>0 </td>
+            </tr>
+            <tr>
+                <th>Rejected</th>
+                <td>0 </td>
+            </tr>
+            <tr>
+                <th>Unsupported</th>
+                <td>0 </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-12" style="padding-left: 1em;">
+        
+        <p class="h4">Warnings</p>
+        <ul class="list-unstyled"><li><a href="#pp_var_News"><code>News</code></a> has a high cardinality: 327 distinct values  <span class="label label-warning">Warning</span></li><li><a href="#pp_var_Type of visualizaton"><code>Type of visualizaton</code></a> has a high cardinality: 59 distinct values  <span class="label label-warning">Warning</span></li> </ul>
+    </div>
+</div>
+    <div class="row headerrow highlight">
+        <h1>Variables</h1>
+    </div>
+    <div class="row variablerow">
+    <div class="col-md-3 namecol">
+        <p class="h4 pp-anchor" id="pp_var_Content it is depicting">Content it is depicting<br/>
+            <small>Categorical</small>
+        </p>
+    </div><div class="col-md-3">
+    <table class="stats ">
+        <tr class="">
+            <th>Distinct count</th>
+            <td>20</td>
+        </tr>
+        <tr>
+            <th>Unique (%)</th>
+            <td>5.1%</td>
+        </tr>
+        <tr class="ignore">
+            <th>Missing (%)</th>
+            <td>0.0%</td>
+        </tr>
+        <tr class="ignore">
+            <th>Missing (n)</th>
+            <td>0</td>
+        </tr>
+    </table>
+</div>
+<div class="col-md-6 collapse in" id="minifreqtable5969000881887260728">
+    <table class="mini freq">
+        <tr class="">
+    <th>economic</th>
+    <td>
+        <div class="bar" style="width:24%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 15.2%">
+            60
+        </div>
+        
+    </td>
+</tr><tr class="">
+    <th>sports</th>
+    <td>
+        <div class="bar" style="width:21%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 13.4%">
+            53
+        </div>
+        
+    </td>
+</tr><tr class="">
+    <th>crime</th>
+    <td>
+        <div class="bar" style="width:14%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 8.3%">
+            &nbsp;
+        </div>
+        33
+    </td>
+</tr><tr class="other">
+    <th>Other values (17)</th>
+    <td>
+        <div class="bar" style="width:100%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 63.1%">
+            250
+        </div>
+        
+    </td>
+</tr>
+    </table>
+</div>
+<div class="col-md-12 text-right">
+    <a role="button" data-toggle="collapse" data-target="#freqtable5969000881887260728, #minifreqtable5969000881887260728"
+       aria-expanded="true" aria-controls="collapseExample">
+        Toggle details
+    </a>
+</div>
+<div class="col-md-12 extrapadding collapse" id="freqtable5969000881887260728">
+    
+<table class="freq table table-hover">
+    <thead>
+    <tr>
+        <td class="fillremaining">Value</td>
+        <td class="number">Count</td>
+        <td class="number">Frequency (%)</td>
+        <td style="min-width:200px">&nbsp;</td>
+    </tr>
+    </thead>
+    <tr class="">
+        <td class="fillremaining">economic</td>
+        <td class="number">60</td>
+        <td class="number">15.2%</td>
+        <td>
+            <div class="bar" style="width:66%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">sports</td>
+        <td class="number">53</td>
+        <td class="number">13.4%</td>
+        <td>
+            <div class="bar" style="width:58%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">crime</td>
+        <td class="number">33</td>
+        <td class="number">8.3%</td>
+        <td>
+            <div class="bar" style="width:36%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">politics</td>
+        <td class="number">31</td>
+        <td class="number">7.8%</td>
+        <td>
+            <div class="bar" style="width:34%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">environment</td>
+        <td class="number">26</td>
+        <td class="number">6.6%</td>
+        <td>
+            <div class="bar" style="width:29%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">weather</td>
+        <td class="number">24</td>
+        <td class="number">6.1%</td>
+        <td>
+            <div class="bar" style="width:27%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">transport</td>
+        <td class="number">24</td>
+        <td class="number">6.1%</td>
+        <td>
+            <div class="bar" style="width:27%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">sensex</td>
+        <td class="number">20</td>
+        <td class="number">5.1%</td>
+        <td>
+            <div class="bar" style="width:22%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">judiciary</td>
+        <td class="number">17</td>
+        <td class="number">4.3%</td>
+        <td>
+            <div class="bar" style="width:19%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">development</td>
+        <td class="number">17</td>
+        <td class="number">4.3%</td>
+        <td>
+            <div class="bar" style="width:19%">&nbsp;</div>
+        </td>
+</tr><tr class="other">
+        <td class="fillremaining">Other values (10)</td>
+        <td class="number">91</td>
+        <td class="number">23.0%</td>
+        <td>
+            <div class="bar" style="width:100%">&nbsp;</div>
+        </td>
+</tr>
+</table>
+</div>
+</div><div class="row variablerow">
+    <div class="col-md-3 namecol">
+        <p class="h4 pp-anchor" id="pp_var_Date">Date<br/>
+            <small>Categorical</small>
+        </p>
+    </div><div class="col-md-3">
+    <table class="stats ">
+        <tr class="">
+            <th>Distinct count</th>
+            <td>27</td>
+        </tr>
+        <tr>
+            <th>Unique (%)</th>
+            <td>6.8%</td>
+        </tr>
+        <tr class="ignore">
+            <th>Missing (%)</th>
+            <td>0.0%</td>
+        </tr>
+        <tr class="ignore">
+            <th>Missing (n)</th>
+            <td>0</td>
+        </tr>
+    </table>
+</div>
+<div class="col-md-6 collapse in" id="minifreqtable978599362343887998">
+    <table class="mini freq">
+        <tr class="">
+    <th>Dec-23</th>
+    <td>
+        <div class="bar" style="width:7%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 5.8%">
+            &nbsp;
+        </div>
+        23
+    </td>
+</tr><tr class="">
+    <th>Dec-14</th>
+    <td>
+        <div class="bar" style="width:6%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 5.1%">
+            &nbsp;
+        </div>
+        20
+    </td>
+</tr><tr class="">
+    <th>Dec-20</th>
+    <td>
+        <div class="bar" style="width:6%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 5.1%">
+            &nbsp;
+        </div>
+        20
+    </td>
+</tr><tr class="other">
+    <th>Other values (24)</th>
+    <td>
+        <div class="bar" style="width:100%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 84.1%">
+            333
+        </div>
+        
+    </td>
+</tr>
+    </table>
+</div>
+<div class="col-md-12 text-right">
+    <a role="button" data-toggle="collapse" data-target="#freqtable978599362343887998, #minifreqtable978599362343887998"
+       aria-expanded="true" aria-controls="collapseExample">
+        Toggle details
+    </a>
+</div>
+<div class="col-md-12 extrapadding collapse" id="freqtable978599362343887998">
+    
+<table class="freq table table-hover">
+    <thead>
+    <tr>
+        <td class="fillremaining">Value</td>
+        <td class="number">Count</td>
+        <td class="number">Frequency (%)</td>
+        <td style="min-width:200px">&nbsp;</td>
+    </tr>
+    </thead>
+    <tr class="">
+        <td class="fillremaining">Dec-23</td>
+        <td class="number">23</td>
+        <td class="number">5.8%</td>
+        <td>
+            <div class="bar" style="width:11%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">Dec-14</td>
+        <td class="number">20</td>
+        <td class="number">5.1%</td>
+        <td>
+            <div class="bar" style="width:10%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">Dec-20</td>
+        <td class="number">20</td>
+        <td class="number">5.1%</td>
+        <td>
+            <div class="bar" style="width:10%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">Dec-27</td>
+        <td class="number">19</td>
+        <td class="number">4.8%</td>
+        <td>
+            <div class="bar" style="width:9%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">Dec-25</td>
+        <td class="number">18</td>
+        <td class="number">4.5%</td>
+        <td>
+            <div class="bar" style="width:9%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">Dec-29</td>
+        <td class="number">17</td>
+        <td class="number">4.3%</td>
+        <td>
+            <div class="bar" style="width:8%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">Dec-19</td>
+        <td class="number">17</td>
+        <td class="number">4.3%</td>
+        <td>
+            <div class="bar" style="width:8%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">Dec-16</td>
+        <td class="number">15</td>
+        <td class="number">3.8%</td>
+        <td>
+            <div class="bar" style="width:7%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">Dec-05</td>
+        <td class="number">15</td>
+        <td class="number">3.8%</td>
+        <td>
+            <div class="bar" style="width:7%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">Dec-26</td>
+        <td class="number">15</td>
+        <td class="number">3.8%</td>
+        <td>
+            <div class="bar" style="width:7%">&nbsp;</div>
+        </td>
+</tr><tr class="other">
+        <td class="fillremaining">Other values (17)</td>
+        <td class="number">217</td>
+        <td class="number">54.8%</td>
+        <td>
+            <div class="bar" style="width:100%">&nbsp;</div>
+        </td>
+</tr>
+</table>
+</div>
+</div><div class="row variablerow">
+    <div class="col-md-3 namecol">
+        <p class="h4 pp-anchor" id="pp_var_News">News<br/>
+            <small>Categorical</small>
+        </p>
+    </div><div class="col-md-3">
+    <table class="stats ">
+        <tr class="alert">
+            <th>Distinct count</th>
+            <td>327</td>
+        </tr>
+        <tr>
+            <th>Unique (%)</th>
+            <td>82.6%</td>
+        </tr>
+        <tr class="ignore">
+            <th>Missing (%)</th>
+            <td>0.0%</td>
+        </tr>
+        <tr class="ignore">
+            <th>Missing (n)</th>
+            <td>0</td>
+        </tr>
+    </table>
+</div>
+<div class="col-md-6 collapse in" id="minifreqtable2899338222090736419">
+    <table class="mini freq">
+        <tr class="">
+    <th>Petrol/diesel prices</th>
+    <td>
+        <div class="bar" style="width:8%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 6.3%">
+            &nbsp;
+        </div>
+        25
+    </td>
+</tr><tr class="">
+    <th>Weather</th>
+    <td>
+        <div class="bar" style="width:8%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 6.1%">
+            &nbsp;
+        </div>
+        24
+    </td>
+</tr><tr class="">
+    <th>Sensex</th>
+    <td>
+        <div class="bar" style="width:6%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 4.8%">
+            &nbsp;
+        </div>
+        19
+    </td>
+</tr><tr class="other">
+    <th>Other values (324)</th>
+    <td>
+        <div class="bar" style="width:100%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 82.8%">
+            328
+        </div>
+        
+    </td>
+</tr>
+    </table>
+</div>
+<div class="col-md-12 text-right">
+    <a role="button" data-toggle="collapse" data-target="#freqtable2899338222090736419, #minifreqtable2899338222090736419"
+       aria-expanded="true" aria-controls="collapseExample">
+        Toggle details
+    </a>
+</div>
+<div class="col-md-12 extrapadding collapse" id="freqtable2899338222090736419">
+    
+<table class="freq table table-hover">
+    <thead>
+    <tr>
+        <td class="fillremaining">Value</td>
+        <td class="number">Count</td>
+        <td class="number">Frequency (%)</td>
+        <td style="min-width:200px">&nbsp;</td>
+    </tr>
+    </thead>
+    <tr class="">
+        <td class="fillremaining">Petrol/diesel prices</td>
+        <td class="number">25</td>
+        <td class="number">6.3%</td>
+        <td>
+            <div class="bar" style="width:8%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">Weather</td>
+        <td class="number">24</td>
+        <td class="number">6.1%</td>
+        <td>
+            <div class="bar" style="width:8%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">Sensex</td>
+        <td class="number">19</td>
+        <td class="number">4.8%</td>
+        <td>
+            <div class="bar" style="width:6%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">Delhi police self-defense campaign</td>
+        <td class="number">3</td>
+        <td class="number">0.8%</td>
+        <td>
+            <div class="bar" style="width:1%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">Housing scheme</td>
+        <td class="number">2</td>
+        <td class="number">0.5%</td>
+        <td>
+            <div class="bar" style="width:1%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">Vegetable prices</td>
+        <td class="number">2</td>
+        <td class="number">0.5%</td>
+        <td>
+            <div class="bar" style="width:1%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">Water bill saving campaign</td>
+        <td class="number">1</td>
+        <td class="number">0.3%</td>
+        <td>
+            <div class="bar" style="width:1%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">It was not chainsnatcher, but the friend who shot the lady</td>
+        <td class="number">1</td>
+        <td class="number">0.3%</td>
+        <td>
+            <div class="bar" style="width:1%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">UTI swatantra</td>
+        <td class="number">1</td>
+        <td class="number">0.3%</td>
+        <td>
+            <div class="bar" style="width:1%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">Jairam wins</td>
+        <td class="number">1</td>
+        <td class="number">0.3%</td>
+        <td>
+            <div class="bar" style="width:1%">&nbsp;</div>
+        </td>
+</tr><tr class="other">
+        <td class="fillremaining">Other values (317)</td>
+        <td class="number">317</td>
+        <td class="number">80.1%</td>
+        <td>
+            <div class="bar" style="width:100%">&nbsp;</div>
+        </td>
+</tr>
+</table>
+</div>
+</div><div class="row variablerow">
+    <div class="col-md-3 namecol">
+        <p class="h4 pp-anchor" id="pp_var_Type of visualizaton">Type of visualizaton<br/>
+            <small>Categorical</small>
+        </p>
+    </div><div class="col-md-3">
+    <table class="stats ">
+        <tr class="alert">
+            <th>Distinct count</th>
+            <td>59</td>
+        </tr>
+        <tr>
+            <th>Unique (%)</th>
+            <td>14.9%</td>
+        </tr>
+        <tr class="ignore">
+            <th>Missing (%)</th>
+            <td>0.0%</td>
+        </tr>
+        <tr class="ignore">
+            <th>Missing (n)</th>
+            <td>0</td>
+        </tr>
+    </table>
+</div>
+<div class="col-md-6 collapse in" id="minifreqtable-3293786913906978397">
+    <table class="mini freq">
+        <tr class="">
+    <th>jumbo figures</th>
+    <td>
+        <div class="bar" style="width:100%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 41.4%">
+            164
+        </div>
+        
+    </td>
+</tr><tr class="">
+    <th>table</th>
+    <td>
+        <div class="bar" style="width:39%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 16.2%">
+            64
+        </div>
+        
+    </td>
+</tr><tr class="">
+    <th>icons</th>
+    <td>
+        <div class="bar" style="width:16%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 6.6%">
+            &nbsp;
+        </div>
+        26
+    </td>
+</tr><tr class="other">
+    <th>Other values (56)</th>
+    <td>
+        <div class="bar" style="width:86%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 35.9%">
+            142
+        </div>
+        
+    </td>
+</tr>
+    </table>
+</div>
+<div class="col-md-12 text-right">
+    <a role="button" data-toggle="collapse" data-target="#freqtable-3293786913906978397, #minifreqtable-3293786913906978397"
+       aria-expanded="true" aria-controls="collapseExample">
+        Toggle details
+    </a>
+</div>
+<div class="col-md-12 extrapadding collapse" id="freqtable-3293786913906978397">
+    
+<table class="freq table table-hover">
+    <thead>
+    <tr>
+        <td class="fillremaining">Value</td>
+        <td class="number">Count</td>
+        <td class="number">Frequency (%)</td>
+        <td style="min-width:200px">&nbsp;</td>
+    </tr>
+    </thead>
+    <tr class="">
+        <td class="fillremaining">jumbo figures</td>
+        <td class="number">164</td>
+        <td class="number">41.4%</td>
+        <td>
+            <div class="bar" style="width:100%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">table</td>
+        <td class="number">64</td>
+        <td class="number">16.2%</td>
+        <td>
+            <div class="bar" style="width:39%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">icons</td>
+        <td class="number">26</td>
+        <td class="number">6.6%</td>
+        <td>
+            <div class="bar" style="width:16%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">area chart, icons, table</td>
+        <td class="number">19</td>
+        <td class="number">4.8%</td>
+        <td>
+            <div class="bar" style="width:12%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">timeline</td>
+        <td class="number">12</td>
+        <td class="number">3.0%</td>
+        <td>
+            <div class="bar" style="width:8%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">table, jumbo figures</td>
+        <td class="number">10</td>
+        <td class="number">2.5%</td>
+        <td>
+            <div class="bar" style="width:7%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">list</td>
+        <td class="number">10</td>
+        <td class="number">2.5%</td>
+        <td>
+            <div class="bar" style="width:7%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">jumbo figures, timeline</td>
+        <td class="number">8</td>
+        <td class="number">2.0%</td>
+        <td>
+            <div class="bar" style="width:5%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">jumbo figures, table</td>
+        <td class="number">8</td>
+        <td class="number">2.0%</td>
+        <td>
+            <div class="bar" style="width:5%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">map, jumbo figures</td>
+        <td class="number">6</td>
+        <td class="number">1.5%</td>
+        <td>
+            <div class="bar" style="width:4%">&nbsp;</div>
+        </td>
+</tr><tr class="other">
+        <td class="fillremaining">Other values (49)</td>
+        <td class="number">69</td>
+        <td class="number">17.4%</td>
+        <td>
+            <div class="bar" style="width:42%">&nbsp;</div>
+        </td>
+</tr>
+</table>
+</div>
+</div><div class="row variablerow">
+    <div class="col-md-3 namecol">
+        <p class="h4 pp-anchor" id="pp_var_colour/ b&w(treatment)">colour/ b&w(treatment)<br/>
+            <small>Categorical</small>
+        </p>
+    </div><div class="col-md-3">
+    <table class="stats ">
+        <tr class="">
+            <th>Distinct count</th>
+            <td>3</td>
+        </tr>
+        <tr>
+            <th>Unique (%)</th>
+            <td>0.8%</td>
+        </tr>
+        <tr class="ignore">
+            <th>Missing (%)</th>
+            <td>0.0%</td>
+        </tr>
+        <tr class="ignore">
+            <th>Missing (n)</th>
+            <td>0</td>
+        </tr>
+    </table>
+</div>
+<div class="col-md-6 collapse in" id="minifreqtable-5288039286913981666">
+    <table class="mini freq">
+        <tr class="">
+    <th>colour</th>
+    <td>
+        <div class="bar" style="width:100%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 67.7%">
+            268
+        </div>
+        
+    </td>
+</tr><tr class="">
+    <th>b&w</th>
+    <td>
+        <div class="bar" style="width:47%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 32.1%">
+            127
+        </div>
+        
+    </td>
+</tr><tr class="">
+    <th>column</th>
+    <td>
+        <div class="bar" style="width:1%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 0.3%">
+            &nbsp;
+        </div>
+        1
+    </td>
+</tr>
+    </table>
+</div>
+<div class="col-md-12 text-right">
+    <a role="button" data-toggle="collapse" data-target="#freqtable-5288039286913981666, #minifreqtable-5288039286913981666"
+       aria-expanded="true" aria-controls="collapseExample">
+        Toggle details
+    </a>
+</div>
+<div class="col-md-12 extrapadding collapse" id="freqtable-5288039286913981666">
+    
+<table class="freq table table-hover">
+    <thead>
+    <tr>
+        <td class="fillremaining">Value</td>
+        <td class="number">Count</td>
+        <td class="number">Frequency (%)</td>
+        <td style="min-width:200px">&nbsp;</td>
+    </tr>
+    </thead>
+    <tr class="">
+        <td class="fillremaining">colour</td>
+        <td class="number">268</td>
+        <td class="number">67.7%</td>
+        <td>
+            <div class="bar" style="width:100%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">b&w</td>
+        <td class="number">127</td>
+        <td class="number">32.1%</td>
+        <td>
+            <div class="bar" style="width:47%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">column</td>
+        <td class="number">1</td>
+        <td class="number">0.3%</td>
+        <td>
+            <div class="bar" style="width:1%">&nbsp;</div>
+        </td>
+</tr>
+</table>
+</div>
+</div><div class="row variablerow">
+    <div class="col-md-3 namecol">
+        <p class="h4 pp-anchor" id="pp_var_height (inch)">height (inch)<br/>
+            <small>Numeric</small>
+        </p>
+    </div><div class="col-md-6">
+    <div class="row">
+        <div class="col-sm-6">
+            <table class="stats ">
+                <tr>
+                    <th>Distinct count</th>
+                    <td>18</td>
+                </tr>
+                <tr>
+                    <th>Unique (%)</th>
+                    <td>4.5%</td>
+                </tr>
+                <tr class="ignore">
+                    <th>Missing (%)</th>
+                    <td>0.0%</td>
+                </tr>
+                <tr class="ignore">
+                    <th>Missing (n)</th>
+                    <td>0</td>
+                </tr>
+                <tr class="ignore">
+                    <th>Infinite (%)</th>
+                    <td>0.0%</td>
+                </tr>
+                <tr class="ignore">
+                    <th>Infinite (n)</th>
+                    <td>0</td>
+                </tr>
+            </table>
+
+        </div>
+        <div class="col-sm-6">
+            <table class="stats ">
+
+                <tr>
+                    <th>Mean</th>
+                    <td>2.4489</td>
+                </tr>
+                <tr>
+                    <th>Minimum</th>
+                    <td>0.25</td>
+                </tr>
+                <tr>
+                    <th>Maximum</th>
+                    <td>16</td>
+                </tr>
+                <tr class="ignore">
+                    <th>Zeros (%)</th>
+                    <td>0.0%</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="col-md-3 collapse in" id="minihistogram-3981909254352840990">
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABLCAYAAAA1fMjoAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAPYQAAD2EBqD%2BnaQAAADl0RVh0U29mdHdhcmUAbWF0cGxvdGxpYiB2ZXJzaW9uIDIuMi4yLCBodHRwOi8vbWF0cGxvdGxpYi5vcmcvhp/UCwAAASNJREFUeJzt3MEJAjEQQFEVS7IIe/JsTxZhT/EqIh9d0I3y3n1hLp8sgcl2jDE2wFO7tQeAme3XHuDR4XR5%2B5vr%2BfiBScAJAkkgEAQCQSAQBAJBIBAEAkEgEAQCQSAQBAJBIBAEAkEgEAQCQSAQBAJBIBAEAkEgEKZ7tGEJDz3wKU4QCAKBIBAIAoEgEAgCgSAQCAKBIBAIAoEgEAgCgSAQCAKBIBAIAoEgEAgCgfAXK7ff8u5qr7Xe37cdY4y1h7i3ZL/8n4hqLn6xIAgEgkAgCASCW6zJfOOSwkXA66a7xYKZ%2BMWCIBAIAoEgEAgCgSAQCAKBIBAIAoEgEAgCgSAQCAKBIBAIAoEgEAgCgSAQCAKBIBAIAoEgEAgCgSAQCAKBcAMNwhuQBgPiawAAAABJRU5ErkJggg%3D%3D">
+
+</div>
+<div class="col-md-12 text-right">
+    <a role="button" data-toggle="collapse" data-target="#descriptives-3981909254352840990,#minihistogram-3981909254352840990"
+       aria-expanded="false" aria-controls="collapseExample">
+        Toggle details
+    </a>
+</div>
+<div class="row collapse col-md-12" id="descriptives-3981909254352840990">
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#quantiles-3981909254352840990"
+                                                  aria-controls="quantiles-3981909254352840990" role="tab"
+                                                  data-toggle="tab">Statistics</a></li>
+        <li role="presentation"><a href="#histogram-3981909254352840990" aria-controls="histogram-3981909254352840990"
+                                   role="tab" data-toggle="tab">Histogram</a></li>
+        <li role="presentation"><a href="#common-3981909254352840990" aria-controls="common-3981909254352840990"
+                                   role="tab" data-toggle="tab">Common Values</a></li>
+        <li role="presentation"><a href="#extreme-3981909254352840990" aria-controls="extreme-3981909254352840990"
+                                   role="tab" data-toggle="tab">Extreme Values</a></li>
+
+    </ul>
+
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active row" id="quantiles-3981909254352840990">
+            <div class="col-md-4 col-md-offset-1">
+                <p class="h4">Quantile statistics</p>
+                <table class="stats indent">
+                    <tr>
+                        <th>Minimum</th>
+                        <td>0.25</td>
+                    </tr>
+                    <tr>
+                        <th>5-th percentile</th>
+                        <td>0.5</td>
+                    </tr>
+                    <tr>
+                        <th>Q1</th>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <th>Median</th>
+                        <td>1.5</td>
+                    </tr>
+                    <tr>
+                        <th>Q3</th>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <th>95-th percentile</th>
+                        <td>8</td>
+                    </tr>
+                    <tr>
+                        <th>Maximum</th>
+                        <td>16</td>
+                    </tr>
+                    <tr>
+                        <th>Range</th>
+                        <td>15.75</td>
+                    </tr>
+                    <tr>
+                        <th>Interquartile range</th>
+                        <td>2</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-4 col-md-offset-2">
+                <p class="h4">Descriptive statistics</p>
+                <table class="stats indent">
+                    <tr>
+                        <th>Standard deviation</th>
+                        <td>2.2923</td>
+                    </tr>
+                    <tr>
+                        <th>Coef of variation</th>
+                        <td>0.93605</td>
+                    </tr>
+                    <tr>
+                        <th>Kurtosis</th>
+                        <td>4.1749</td>
+                    </tr>
+                    <tr>
+                        <th>Mean</th>
+                        <td>2.4489</td>
+                    </tr>
+                    <tr>
+                        <th>MAD</th>
+                        <td>1.6832</td>
+                    </tr>
+                    <tr class="">
+                        <th>Skewness</th>
+                        <td>1.9386</td>
+                    </tr>
+                    <tr>
+                        <th>Sum</th>
+                        <td>969.75</td>
+                    </tr>
+                    <tr>
+                        <th>Variance</th>
+                        <td>5.2545</td>
+                    </tr>
+                    <tr>
+                        <th>Memory size</th>
+                        <td>3.2 KiB</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane col-md-8 col-md-offset-2" id="histogram-3981909254352840990">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAAGQCAYAAAByNR6YAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAPYQAAD2EBqD%2BnaQAAADl0RVh0U29mdHdhcmUAbWF0cGxvdGxpYiB2ZXJzaW9uIDIuMi4yLCBodHRwOi8vbWF0cGxvdGxpYi5vcmcvhp/UCwAAIABJREFUeJzt3XlclPX%2B//8nMLFJ5AYcl24itqkZKib2VXI5mlaeNNRDlppZaYly60gnJcss7UOJuRQukVZuKblm5qmTnk5prrnmMQ3QDHNhKElRBIH5/dGt%2BTWiyXLpNXPxuN9u3Gje18zF68kQPrmui8HL4XA4BAAAAMN4mz0AAACA1VCwAAAADEbBAgAAMBgFCwAAwGAULAAAAINRsAAAAAxGwQIAADAYBQsAAMBgFCwAAACDUbAAAAAMRsECAAAwGAULAADAYBQsAAAAg1GwAAAADEbBAgAAMBgFCwAAwGAULAAAAINRsAAAAAxGwQIAADAYBQsAAMBgFCwAAACDUbAAAAAMRsECAAAwGAULAADAYBQsAAAAg1GwAAAADEbBAgAAMBgFCwAAwGAULAAAAINRsAAAAAxGwQIAADAYBQsAAMBgFCwAAACDUbAAAAAMRsECAAAwGAULAADAYBQsAAAAg1GwAAAADEbBAgAAMJjN7AGqC7v9TKUe5%2B3tpdq1a%2BiXX86qtNRh8FTmsnI2ydr5rJxNsnY%2BsnkuK%2Be7mtlCQq43dH/lxREsN%2Bft7SUvLy95e3uZPYrhrJxNsnY%2BK2eTrJ2PbJ7LyvmsmI2CBQAAYDAKFgAAgMEoWAAAAAajYAEAABiMggUAAGAwChYAAIDBLFuwTp48qYSEBLVt21YxMTFKTk5WYWGhJCk7O1uDBw9Wy5Ytdd9992njxo0uj920aZN69uypyMhIDRo0SNnZ2WZEAAAAHsqSBcvhcCghIUEFBQVatGiRpk6dqi%2B%2B%2BELTpk2Tw%2BFQfHy86tatq%2BXLl6tXr14aMWKEjh07Jkk6duyY4uPjFRsbq2XLlql27doaPny4HA5rvagbAAC4eiz5Su6HDh3S7t279fXXX6tu3bqSpISEBL3%2B%2Buu6%2B%2B67lZ2drSVLligwMFBNmjTR5s2btXz5co0cOVJLly7V7bffriFDhkiSkpOT1b59e23btk3R0dFmxgIAAB7CkkewQkJCNGfOHGe5%2Bl1%2Bfr727NmjZs2aKTAw0LkeFRWl3bt3S5L27NmjNm3aOLcFBASoefPmzu0AAABXYsmCFRwcrJiYGOft0tJSLVy4UO3atZPdbldoaKjL/evUqaMTJ05I0hW3AwAAXIklTxFeLCUlRfv379eyZcv0/vvvy9fX12W7r6%2BvioqKJEkFBQV/ur08cnJyZLfbXdZstsAyxa08fHy8Xd5biZWzSdbOZ%2BVskrXzkc1zWTmfFbNZvmClpKRo3rx5mjp1qm655Rb5%2BfkpLy/P5T5FRUXy9/eXJPn5%2BZUpU0VFRQoODi73x0xPT1dqaqrLWnx8vBISEiqZQgoODqj0Y92dlbNJ1s5n5WyStfORzXNZOZ%2BVslm6YE2YMEGLFy9WSkqKunfvLkkKCwtTZmamy/1yc3OdR5fCwsKUm5tbZnvTpk3L/XHj4uLUpUsXlzWbLVCnTp2tcAYfH28FBwfo9OkClZSUltnebfKGCu/TLJ8/G%2BNy%2B0rZPJ2V81k5m2TtfGTzXFbOdzWz1apVw9D9lZdlC1ZqaqqWLFmiKVOmqEePHs71yMhIpaWl6fz5886jVjt27FBUVJRz%2B44dO5z3Lygo0P79%2BzVixIhyf%2BzQ0NAypwPt9jMqLq78F01JSWmVHu8OLje/FbL9GSvns3I2ydr5yOa5rJzPStmsc7LzD7KysjRz5kw9%2BeSTioqKkt1ud761bdtW9erVU1JSkjIyMpSWlqa9e/eqb9%2B%2BkqQ%2Bffpo586dSktLU0ZGhpKSktSwYUNeogEAAJSbJQvW%2BvXrVVJSolmzZqlDhw4ubz4%2BPpo5c6bsdrtiY2O1evVqzZgxQ/Xr15ckNWzYUG%2B99ZaWL1%2Buvn37Ki8vTzNmzJCXl5fJqQAAgKew5CnCoUOHaujQoZfd3qhRIy1cuPCy2zt27KiOHTtejdEAAEA1YMkjWAAAAGaiYAEAABiMggUAAGAwChYAAIDBKFgAAAAGo2ABAAAYjIIFAABgMAoWAACAwShYAAAABqNgAQAAGIyCBQAAYDAKFgAAgMEoWAAAAAajYAEAABiMggUAAGAwChYAAIDBKFgAAAAGo2ABAAAYjIIFAABgMAoWAACAwShYAAAABqNgAQAAGIyCBQAAYDAKFgAAgMEoWAAAAAajYAEAABjMZvYAV1tRUZFiY2P14osvKjo6WmPGjNHKlSvL3C86Olrz58%2BXJLVp00Znzpxx2b5z507VqFHjmswMAAA8m6ULVmFhoRITE5WRkeFcGzt2rBITE523f/rpJw0cOFCDBg2SJJ08eVJnzpzRunXr5O/v77xfYGDgtRscAAB4NMsWrMzMTCUmJsrhcLisX3/99br%2B%2Buudt8eMGaMePXqoa9eukqSsrCyFhIToxhtvvKbzAgAA67DsNVjbtm1TdHS00tPTL3ufzZs3a/v27Ro1apRzLTMzU40bN74WIwIAAIuy7BGshx9%2B%2BIr3SUtL04MPPqh69eo517KyslRQUKCBAwfq8OHDatq0qZ5//nlKFwAAKDfLFqwryc7O1pYtWzR27FiX9UOHDunXX3/VqFGjFBQUpHfeeUeDBw/WJ598oqCgoHLtOycnR3a73WXNZgtUaGhohef08fF2ee/JbDbXDFbKdilWzmflbJK185HNc1k5nxWzVduC9dlnn6lp06a66aabXNbnzp2rCxcuOH9jcPLkyerYsaO%2B%2BOIL/e1vfyvXvtPT05WamuqyFh8fr4SEhErPGxwcUOnHuotatS79W5hWyPZnrJzPytkka%2Bcjm%2Beycj4rZau2BWvDhg3661//Wmbd19dXvr6%2Bztt%2Bfn5q2LChTp48We59x8XFqUuXLi5rNlugTp06W%2BE5fXy8FRwcoNOnC1RSUlrhx7uTi/NbKdulWDmflbNJ1s5HNs9l5XxXM9vlfri/2qplwXI4HPr222/11FNPlVnv1q2bhg8frtjYWEnSuXPndOTIEUVERJR7/6GhoWVOB9rtZ1RcXPkvmpKS0io93h1cbn4rZPszVs5n5WyStfORzXNZOZ%2BVslXLgvXTTz/p7NmzZU4Penl5qVOnTnrrrbfUoEED1a5dW9OnT9df/vIXdezY0aRpAQCAp6mWBevnn3%2BWJN1www1ltv3zn/%2BUzWZTYmKi8vPz1a5dO6WlpcnHx%2BdajwkAADxUtShYBw8edLkdGRlZZu13fn5%2BGjNmjMaMGXMtRgMAABZknd%2BHBAAAcBMULAAAAINRsAAAAAxGwQIAADAYBQsAAMBgFCwAAACDUbAAAAAMRsECAAAwGAULAADAYBQsAAAAg1GwAAAADEbBAgAAMBgFCwAAwGAULAAAAINRsAAAAAxGwQIAADAYBQsAAMBgFCwAAACDUbAAAAAMRsECAAAwGAULAADAYBQsAAAAg1GwAAAADEbBAgAAMBgFCwAAwGAULAAAAINRsAAAAAxm%2BYJVVFSknj17auvWrc61iRMn6tZbb3V5W7hwoXP7mjVr1LVrV0VGRio%2BPl6//PKLGaMDAAAPZemCVVhYqFGjRikjI8NlPSsrS4mJidq4caPzrU%2BfPpKkvXv3auzYsRoxYoTS09N1%2BvRpJSUlmTE%2BAADwUDazB7haMjMzlZiYKIfDUWZbVlaWHn/8cYWEhJTZtnDhQt17773q3bu3JGnSpEnq3LmzsrOzdeONN171uQEAgOez7BGsbdu2KTo6Wunp6S7r%2Bfn5OnnypMLDwy/5uD179qhNmzbO2/Xq1VP9%2BvW1Z8%2BeqzkuAACwEMsewXr44YcvuZ6VlSUvLy/Nnj1bX331lWrWrKnHHntMDz74oCQpJydHoaGhLo%2BpU6eOTpw4Ue6PnZOTI7vd7rJmswWW2W95%2BPh4u7z3ZDabawYrZbsUK%2BezcjbJ2vnI5rmsnM%2BK2SxbsC7n0KFD8vLyUkREhAYMGKDt27frxRdfVFBQkLp166bz58/L19fX5TG%2Bvr4qKioq98dIT09Xamqqy1p8fLwSEhIqPXdwcEClH%2BsuatWqccl1K2T7M1bOZ%2BVskrXzkc1zWTmflbJVu4LVu3dvde7cWTVr1pQk3Xbbbfrhhx%2B0ePFidevWTX5%2BfmXKVFFRkQICyv%2Bkx8XFqUuXLi5rNlugTp06W%2BF5fXy8FRwcoNOnC1RSUlrhx7uTi/NbKdulWDmflbNJ1s5HNs9l5XxXM9vlfri/2qpdwfLy8nKWq99FRERoy5YtkqSwsDDl5ua6bM/Nzb3kBfGXExoaWuZ0oN1%2BRsXFlf%2BiKSkprdLj3cHl5rdCtj9j5XxWziZZOx/ZPJeV81kpm3VOdpbT9OnTNXjwYJe1AwcOKCIiQpIUGRmpHTt2OLcdP35cx48fV2Rk5LUcEwAAeLBqV7A6d%2B6s7du3a%2B7cufrxxx/1wQcfaNWqVRoyZIgkqX///vroo4%2B0dOlSHThwQM8995w6derESzQAAIByq3anCO%2B44w5Nnz5db775pqZPn64GDRrojTfeUKtWrSRJrVq10iuvvKI333xTv/76q9q3b68JEyaYPDUAAPAk1aJgHTx40OV2165d1bVr18vePzY2VrGxsVd7LAAAYFHV7hQhAADA1UbBAgAAMBgFCwAAwGAULAAAAINRsAAAAAxGwQIAADAYBQsAAMBgFCwAAACDUbAAAAAMRsECAAAwGAULAADAYBQsAAAAg1GwAAAADEbBAgAAMBgFCwAAwGAULAAAAINRsAAAAAxGwQIAADAYBQsAAMBgFCwAAACDUbAAAAAMRsECAAAwGAULAADAYBQsAAAAg1GwAAAADEbBAgAAMJjlC1ZRUZF69uyprVu3Otd2796thx56SK1atVL37t21dOlSl8c88MADuvXWW13evv/%2B%2B2s9OgAA8FA2swe4mgoLC5WYmKiMjAznmt1u15NPPqn%2B/fvrtdde0//%2B9z8lJSUpJCREnTp1UklJiX744QctXLhQ4eHhzsfVqlXLhAQAAMATWbZgZWZmKjExUQ6Hw2V93bp1qlu3rkaNGiVJCg8P19atW/Xxxx%2BrU6dOOnr0qC5cuKA77rhDfn5%2BZowOAAA8nGUL1rZt2xQdHa1//OMfatmypXM9JiZGTZs2LXP//Px8Sb8Vs3r16lGuAABApbndNVj9%2BvXTkiVLdObMmSrt5%2BGHH9bzzz%2BvgIAAl/WGDRu6FK6ff/5Zn3zyie666y5JUlZWlq677joNGzZM7du314ABA7R3794qzQIAAKoXtzuC1a5dO82ePVvJycn661//qtjYWLVv315eXl6Gf6zz589r5MiRqlu3ruLi4iRJhw8f1q%2B//qp%2B/fopISFBH374oR599FGtXbtW9erVK9d%2Bc3JyZLfbXdZstkCFhoZWeEYfH2%2BX957MZnPNYKVsl2LlfFbOJlk7H9k8l5XzWTGbl%2BPii5TcgMPh0KZNm7Rq1SqtW7dOwcHB6t27t3r37q3GjRtXeH%2B33nqr5s%2Bfr%2BjoaOfa2bNnNXz4cGVkZOiDDz5wXtBeXFys8%2BfPKygoyDnLAw88oPvvv19PPfVUuT7eW2%2B9pdTUVJe1%2BPh4JSQkVHj2K2kz9lPD93m1fPNqD7NHAADgmnC7I1iS5OXlpfbt26t9%2B/YqKCjQggULNHPmTKWlpal169Z69NFHdc8991R6//n5%2BXriiSf0448/at68eS6/LWiz2Zzl6vdZIiIidPLkyXLvPy4uTl26dHFZs9kCderU2QrP6uPjreDgAJ0%2BXaCSktIKP96dXJzfStkuxcr5rJxNsnY%2BsnkuK%2Be7mtlq1aph6P7Kyy0LlvTbabbVq1dr9erV%2Bv7779W6dWs9%2BOCDOnHihF544QVt375dY8eOrfB%2BS0tLNWLECB09elQLFixQkyZNXLYPHDhQ0dHRGjFihPP%2BBw8e1COPPFLujxEaGlrmdKDdfkbFxZX/oikpKa3S493B5ea3QrY/Y%2BV8Vs4mWTsf2TyXlfNZKZvbFayPPvpIH330kbZu3aratWurd%2B/eevPNN12OMtWrV0%2BvvvpqpQrWsmXLtHXrVs2aNUvBwcHOa6Wuu%2B461axZU126dNGMGTPUtGlTNW7cWPPnz9eZM2f04IMPGhURAABYnNsVrLFjx6pz586aMWOG7r77bnl7l73gLSIiQgMGDKjU/j/77DOVlpZq2LBhLutt27bVggULNHjwYBUWFmrixInKzc1VZGSk3nvvPZfThgAAAH/G7QrWV199pVq1aikvL89Zrvbu3avmzZvLx8dHktS6dWu1bt263Ps8ePCg87/nzp37p/f18vLSU089Ve4L2gEAAC7mdr8PmZ%2Bfrx49euidd95xrg0dOlS9evXS8ePHTZwMAACgfNyuYP3f//2fGjVqpMcee8y59vtrUCUnJ5s4GQAAQPm4XcH65ptvNGbMGIWEhDjXateureeee05btmwxcTIAAIDycbuCZbPZdPr06TLrBQUFZf5wMwAAgDtyu4J19913a%2BLEifrxxx%2Bda9nZ2UpOTlZMTIyJkwEAAJSP2/0W4ejRo/XYY4%2Bpe/fuCg4OliSdPn1azZs3V1JSksnTAQAAXJnbFaw6depo5cqV2rRpkzIyMmSz2XTTTTfprrvuuip/8BkAAMBoblewJMnHx0cxMTGcEgQAAB7J7QqW3W7XtGnTtHPnTl24cKHMhe3r1683aTIAAIDycbuC9eKLL2rfvn26//77df3115s9DgAAQIW5XcHasmWL5syZozZt2pg9CgAAQKW43cs0BAYGqk6dOmaPAQAAUGluV7B69eqlOXPmqKSkxOxRAAAAKsXtThHm5eVpzZo1%2Bu9//6sbb7xRvr6%2BLtvnz59v0mSoqnunfW32CBXyr2famz0CAMBDuV3BkqSePXuaPQIAAECluV3BSk5ONnsEAACAKnG7a7AkKScnR6mpqUpMTNTPP/%2BsTz/9VIcOHTJ7LAAAgHJxu4J15MgR/e1vf9PKlSv12Wef6dy5c1q7dq369OmjPXv2mD0eAADAFbldwXrttdfUtWtXrVu3Ttddd50kacqUKerSpYsmT55s8nQAAABX5nYFa%2BfOnXrsscdc/rCzzWbT8OHDtX//fhMnAwAAKB%2B3K1ilpaUqLS0ts3727Fn5%2BPiYMBEAAEDFuF3B6tChg95%2B%2B22XkpWXl6eUlBS1a9fOxMkAAADKx%2B0K1pgxY7Rv3z516NBBhYWFevrpp9W5c2cdPXpUo0ePNns8AACAK3K718EKCwvTqlWrtGbNGn333XcqLS1V//791atXLwUFBZk9HgAAwBW5XcGSpICAAPXr18/sMQAAACrF7QrWoEGD/nQ7f4sQAAC4O7e7BqtBgwYub2FhYTp//rz27t2rVq1aVXh/RUVF6tmzp7Zu3epcy87O1uDBg9WyZUvdd9992rhxo8tjNm3apJ49eyoyMlKDBg1SdnZ2lXMBAIDqw%2B2OYF3ubxHOmDFDJ06cqNC%2BCgsLlZiYqIyMDOeaw%2BFQfHy8brnlFi1fvlzr1q3TiBEjtHbtWtWvX1/Hjh1TfHy8Ro4cqZiYGM2YMUPDhw/X6tWrXV6bCwAA4HLc7gjW5fTq1Uv/%2Bte/yn3/zMxM/f3vf9ePP/7osr5lyxZlZ2frlVdeUZMmTTRs2DC1bNlSy5cvlyQtXbpUt99%2Bu4YMGaKbb75ZycnJ%2Bumnn7Rt2zZD8wAAAOvymIK1a9euCr3Q6LZt2xQdHa309HSX9T179qhZs2YKDAx0rkVFRWn37t3O7W3atHFuCwgIUPPmzZ3bAQAArsTtThFe6iL3/Px8HTx4UA8//HC593O5%2B9rtdoWGhrqs1alTx3n68UrbAQAArsTtClb9%2BvXLXOt03XXXacCAAXrggQeqvP%2BCggL5%2Bvq6rPn6%2BqqoqKhc28sjJydHdrvdZc1mCyxT3MrDx8fb5T2uHZutap9zKz93Vs4mWTsf2TyXlfNZMZvbFazXXnvtqu7fz89PeXl5LmtFRUXy9/d3br%2B4TBUVFSk4OLjcHyM9PV2pqakua/Hx8UpISKjk1FJwcEClH4vKqVWrhiH7sfJzZ%2BVskrXzkc1zWTmflbK5XcHavn17ue975513Vnj/YWFhyszMdFnLzc11Hl0KCwtTbm5ume1NmzYt98eIi4tTly5dXNZstkCdOnW2wvP6%2BHgrODhAp08XqKSk7B/BxtVTmefrj6z83Fk5m2TtfGTzXFbOdzWzGfXDckW5XcEaOHCg8xShw%2BFwrl%2B85uXlpe%2B%2B%2B67C%2B4%2BMjFRaWprOnz/vPGq1Y8cORUVFObfv2LHDef%2BCggLt379fI0aMKPfHCA0NLXM60G4/o%2BLiyn/RlJSUVunxqDijPt9Wfu6snE2ydj6yeS4r57NSNrc72Tl79mw1aNBA06ZN0%2BbNm7Vjxw69//77aty4sUaNGqX169dr/fr1WrduXaX237ZtW9WrV09JSUnKyMhQWlqa9u7dq759%2B0qS%2BvTpo507dyotLU0ZGRlKSkpSw4YNFR0dbWRMAABgYW5XsJKTkzVu3Dh1795dtWrVUo0aNdSuXTu98sorWrx4scurvFeGj4%2BPZs6cKbvdrtjYWK1evVozZsxQ/fr1JUkNGzbUW2%2B9peXLl6tv377Ky8vTjBkzeJFRAABQbm53ijAnJ%2BeS5SkoKEinTp2q1D4PHjzocrtRo0ZauHDhZe/fsWNHdezYsVIfCwAAwO2OYLVs2VJTpkxRfn6%2Bcy0vL08pKSm66667TJwMAACgfNzuCNYLL7ygQYMG6e6771Z4eLgcDod%2B%2BOEHhYSEaP78%2BWaPBwAAcEVuV7CaNGmitWvXas2aNcrKypIkPfLII7r//vsVEGCd18cAAADW5XYFS5JuuOEG9evXT0ePHtWNN94o6bdXcwcAAPAEbncNlsPh0OTJk3XnnXeqZ8%2BeOnHihEaPHq2xY8fqwoULZo8HAABwRW5XsBYsWKCPPvpIL730kvNvAnbt2lXr1q0r8%2BdnAAAA3JHbFaz09HSNGzdOsbGxzteeuu%2B%2B%2BzRx4kR9/PHHJk8HAABwZW5XsI4ePXrJv/t32223yW63mzARAABAxbhdwWrQoIG%2B/fbbMutfffWV84J3AAAAd%2BZ2v0X4%2BOOP6%2BWXX5bdbpfD4dDmzZuVnp6uBQsWaMyYMWaPBwAAcEVuV7D69Omj4uJizZo1S%2BfPn9e4ceNUu3ZtPfPMM%2Brfv7/Z4wEAAFyR2xWsNWvWqEePHoqLi9Mvv/wih8OhOnXqmD0WAABAubndNVivvPKK82L22rVrU64AAIDHcbuCFR4eru%2B//97sMQAAACrN7U4R3nbbbXr22Wc1Z84chYeHy8/Pz2V7cnKySZMBAACUj9sVrMOHDysqKkqSeN0rAADgkdyiYE2aNEkjRoxQYGCgFixYYPY4AAAAVeIW12C99957KigocFkbOnSocnJyTJoIAACg8tyiYDkcjjJr27dvV2FhoQnTAAAAVI1bFCwAAAAroWABAAAYzG0KlpeXl9kjAAAAGMItfotQkiZOnOjymlcXLlxQSkqKatSo4XI/XgcLAAC4O7coWHfeeWeZ17xq1aqVTp06pVOnTpk0FQAAQOW4RcHita8AAICVuM01WAAAAFZBwQIAADCYW5wivNZWrFihpKSkMuteXl46cOCAnn76af3nP/9x2TZ79mx17tz5Wo0IAAA8WLUsWPfdd59iYmKct4uLi/Xoo4%2BqU6dOkqSsrCylpKTorrvuct7nhhtuuNZjAgAAD1UtC5a/v7/8/f2dt99%2B%2B205HA49%2B%2ByzKioq0tGjR9WiRQuFhISYOCUAAPBU1f4arLy8PL3zzjtKTEyUr6%2BvDh06JC8vL914441mjwYAADxUtTyC9UeLFy9WaGioevToIUk6dOiQgoKC9Nxzz2nbtm36y1/%2BopEjR6pjx47l3mdOTk6Z1/Wy2QIVGhpa4fl8fLxd3uPasdmq9jm38nNn5WyStfORzXNZOZ8Vs1XrguVwOLR06VI98cQTzrVDhw7p/Pnz6tChg4YOHarPP/9cTz/9tNLT09WiRYty7Tc9PV2pqakua/Hx8UpISKj0rMHBAZV%2BLCqnVq0aV75TOVj5ubNyNsna%2Bcjmuaycz0rZvBwOh8PsIcyyd%2B9e9e/fX5s2bXJexF5aWqozZ864XNT%2B1FNPKSQkRBMmTCjXfo0%2BghUcHKDTpwtUUlJaZnu3yRsqvE%2BUz%2BfPxlz5Tn/iSs%2BdJ7NyNsna%2Bcjmuayc72pmM%2BqH5Yqq1kewNmzYoDZt2riUKW9v7zK/MRgREaHMzMxy7zc0NLRMmbLbz6i4uPJfNCUlpVV6PCrOqM%2B3lZ87K2eTrJ2PbJ7LyvmslM06JzsrYe/evWrdurXL2pgxY8q8RtaBAwcUERFxLUcDAAAerFoXrIyMDN10000ua126dNHHH3%2BsVatW6ciRI0pNTdWOHTs0YMAAk6YEAACeplqfIszNzVVwcLDL2j333KOXXnpJs2bN0rFjx3TzzTdrzpw5atiwoUlTAgAAT1OtC9bevXsvud6vXz/169fvGk8DAACsolqfIgQAALgaKFgAAAAGo2ABAAAYjIIFAABgMAoWAACAwShYAAAABqNgAQAAGIyCBQAAYDAKFgAAgMEoWAAAAAajYAEAABiMggUAAGAwChYAAIDBKFgAAAAGo2ABAAAYjIIFAABgMAoWAACAwShYAAAABqNgAQAAGIyCBQAAYDAKFgAAgMEoWAAAAAajYAEAABiMggUAAGAwChYAAIDBKFgAAAAGq7YF6/PPP9ett97q8paQkCBJ2r9/v/r166fIyEj16dNH%2B/btM3laAADgSaptwcrMzFTnzp21ceNG59vEiRN17tw5DR06VG3atNGKFSvUqlUrDRs2TOfOnTN7ZAAA4CGqbcHKysrSLbfcopCQEOdbcHCw1q5dKz8/Pz333HNq0qSJxo4dqxo1aujTTz81e2QAAOAhqnXBCg8PL7O%2BZ88eRUVFycvLS5Lk5eWl1q1ba/fu3dd4QgAA4KlsZg9gBofDocOHD2vjxo16%2B%2B23VVJSoh49eighIUFq7ULKAAASqUlEQVR2u1033XSTy/3r1KmjjIyMcu8/JydHdrvdZc1mC1RoaGiFZ/Xx8XZ5j2vHZqva59zKz52Vs0nWzkc2z2XlfFbMVi0L1rFjx1RQUCBfX19NmzZNR48e1cSJE3X%2B/Hnn%2Bh/5%2BvqqqKio3PtPT09Xamqqy1p8fLzzIvrKCA4OqPRjUTm1atUwZD9Wfu6snE2ydj6yeS4r57NStmpZsBo0aKCtW7fqhhtukJeXl5o2barS0lL985//VNu2bcuUqaKiIvn7%2B5d7/3FxcerSpYvLms0WqFOnzlZ4Vh8fbwUHB%2Bj06QKVlJRW%2BPGovMo8X39k5efOytkka%2Bcjm%2Beycr6rmc2oH5YrqloWLEmqWbOmy%2B0mTZqosLBQISEhys3NddmWm5tbodN7oaGhZe5vt59RcXHlv2hKSkqr9HhUnFGfbys/d1bOJlk7H9k8l5XzWSmbdU52VsCGDRsUHR2tgoIC59p3332nmjVrKioqSrt27ZLD4ZD02/VaO3fuVGRkpFnjAgAAD1MtC1arVq3k5%2BenF154QYcOHdKXX36pSZMm6YknnlCPHj10%2BvRpvfrqq8rMzNSrr76qgoIC3XvvvWaPDQAAPES1LFhBQUGaO3eufvnlF/Xp00djx45VXFycnnjiCQUFBentt9/Wjh07FBsbqz179igtLU2BgYFmjw0AADxEtb0G6%2Babb9Z77713yW133HGHVq5ceY0nAgAAVlEtj2ABAABcTRQsAAAAg1GwAAAADEbBAgAAMBgFCwAAwGAULAAAAINRsAAAAAxGwQIAADAYBQsAAMBgFCwAAACDUbAAAAAMRsECAAAwGAULAADAYBQsAAAAg1GwAAAADEbBAgAAMBgFCwAAwGAULAAAAINRsAAAAAxGwQIAADAYBQsAAMBgFCwAAACDUbAAAAAMRsECAAAwGAULAADAYBQsAAAAg1XLgnXy5EklJCSobdu2iomJUXJysgoLCyVJEydO1K233urytnDhQpMnBgAAnsRm9gDXmsPhUEJCgoKDg7Vo0SL9%2Buuvev755%2BXt7a3Ro0crKytLiYmJevDBB52PCQoKMnFioHzunfa12SOU27%2BeaW/2CABwVVW7I1iHDh3S7t27lZycrJtvvllt2rRRQkKC1qxZI0nKyspSs2bNFBIS4nwLCAgweWoAAOBJql3BCgkJ0Zw5c1S3bl2X9fz8fOXn5%2BvkyZMKDw83ZzgAAGAJ1a5gBQcHKyYmxnm7tLRUCxcuVLt27ZSVlSUvLy/Nnj1bd999tx544AGtXLnSxGkBAIAnqnbXYF0sJSVF%2B/fv17Jly/S///1PXl5eioiI0IABA7R9%2B3a9%2BOKLCgoKUrdu3cq9z5ycHNntdpc1my1QoaGhFZ7Px8fb5T2uHZutap9znrvLq%2Brn9mqz8nNHNs9l5XxWzFatC1ZKSormzZunqVOn6pZbbtHNN9%2Bszp07q2bNmpKk2267TT/88IMWL15coYKVnp6u1NRUl7X4%2BHglJCRUetbgYK4Du9Zq1aphyH547srqNnmD2SNUyDev9jB7BMNZ%2BevSytkka%2BezUrZqW7AmTJigxYsXKyUlRd27d5ckeXl5OcvV7yIiIrRly5YK7TsuLk5dunRxWbPZAnXq1NkKz%2Bnj463g4ACdPl2gkpLSCj8elVeZ5%2BuPeO6so6pfC%2B7Eyl%2BXVs4mWTvf1cxm1A/LFVUtC1ZqaqqWLFmiKVOmqEeP//8n0%2BnTp2vXrl16//33nWsHDhxQREREhfYfGhpa5nSg3X5GxcWV/6IpKSmt0uNRcUZ9vnnuPJ8Vnz8rf11aOZtk7XxWylbtClZWVpZmzpypoUOHKioqyuVaqc6dOystLU1z585Vt27dtHHjRq1atUrz5883cWKYxZNeVwoA4F6qXcFav369SkpKNGvWLM2aNctl28GDBzV9%2BnS9%2Beabmj59uho0aKA33nhDrVq1MmlaAADgiapdwRo6dKiGDh162e1du3ZV165dr%2BFEAADAaqzz%2B5AAAABugoIFAABgMAoWAACAwShYAAAABqNgAQAAGIyCBQAAYDAKFgAAgMEoWAAAAAajYAEAABiMggUAAGAwChYAAIDBKFgAAAAGo2ABAAAYjIIFAABgMAoWAACAwShYAAAABqNgAQAAGIyCBQAAYDAKFgAAgMEoWAAAAAajYAEAABiMggUAAGAwChYAAIDBKFgAAAAGs5k9AAC4u3unfW32CBXyr2famz0CUO1xBAsAAMBgFCwAAACDcYrwEgoLC/Xyyy/r3//%2Bt/z9/TVkyBANGTLE7LEAoFw86ZQmpzNhVRSsS5g0aZL27dunefPm6dixYxo9erTq16%2BvHj16mD0aAADwABSsi5w7d05Lly7VO%2B%2B8o%2BbNm6t58%2BbKyMjQokWLKFgAAKBcKFgXOXDggIqLi9WqVSvnWlRUlGbPnq3S0lJ5e3PZGgDAM3jS6eJvXrXWQQwK1kXsdrtq1aolX19f51rdunVVWFiovLw81a5d%2B4r7yMnJkd1ud1mz2QIVGhpa4Xl8fLxd3gOAldhsxn1vs/r3S6vnk6yVjYJ1kYKCApdyJcl5u6ioqFz7SE9PV2pqqsvaiBEjNHLkyArPk5OTo3nz5iguLu6SBc2TG39OTo7S09Mvm83TWTmflbNJ1s5n9Wx/9v3S01Umn6f8G5GTk6O33nrLUs%2BddaqiQfz8/MoUqd9v%2B/v7l2sfcXFxWrFihctbXFxcpeax2%2B1KTU0tc0TMCqycTbJ2Pitnk6ydj2yey8r5rJiNI1gXCQsL06lTp1RcXCyb7bdPj91ul7%2B/v4KDg8u1j9DQUMs0cAAAUHEcwbpI06ZNZbPZtHv3bufajh071KJFCy5wBwAA5UJjuEhAQIB69%2B6t8ePHa%2B/evVq3bp3effddDRo0yOzRAACAh/AZP378eLOHcDft2rXT/v379cYbb2jz5s166qmn1KdPH9PmqVGjhtq2basaNWqYNsPVYuVskrXzWTmbZO18ZPNcVs5ntWxeDofDYfYQAAAAVsIpQgAAAINRsAAAAAxGwQIAADAYBQsAAMBgFCwAAACDUbAAAAAMRsECAAAwGAULAADAYBQsN1ZYWKjnn39ebdq0UYcOHfTuu%2B%2BaPZJhTp48qYSEBLVt21YxMTFKTk5WYWGh2WMZbujQoRozZozZYxiqqKhIL7/8su688079v//3/zRlyhRZ5fWKjx8/rmHDhql169bq0qWL3n//fbNHMkRRUZF69uyprVu3Oteys7M1ePBgtWzZUvfdd582btxo4oSVd6lsu3fv1kMPPaRWrVqpe/fuWrp0qYkTVs2l8v3uzJkziomJ0YoVK0yYrOoule3YsWN68sknFRkZqW7dumnt2rUmTlg1FCw3NmnSJO3bt0/z5s3TSy%2B9pNTUVH366admj1VlDodDCQkJKigo0KJFizR16lR98cUXmjZtmtmjGeqTTz7Rl19%2BafYYhps4caI2bdqkuXPn6o033tCHH36o9PR0s8cyxDPPPKPAwECtWLFCzz//vKZNm6bPP//c7LGqpLCwUKNGjVJGRoZzzeFwKD4%2BXnXr1tXy5cvVq1cvjRgxQseOHTNx0oq7VDa73a4nn3xSbdu21cqVK5WQkKAJEybov//9r3mDVtKl8v1RSkqKcnJyrvFUxrhUtuLiYg0bNkw2m00rV67U448/rueee07ff/%2B9iZNWns3sAXBp586d09KlS/XOO%2B%2BoefPmat68uTIyMrRo0SL16NHD7PGq5NChQ9q9e7e%2B/vpr1a1bV5KUkJCg119/XaNHjzZ5OmPk5eVp0qRJatGihdmjGCovL0/Lly/Xe%2B%2B9pzvuuEOSNGTIEO3Zs0cPPfSQydNVza%2B//qrdu3drwoQJCg8PV3h4uGJiYrR582Z169bN7PEqJTMzU4mJiWWOMG7ZskXZ2dlasmSJAgMD1aRJE23evFnLly/XyJEjTZq2Yi6Xbd26dapbt65GjRolSQoPD9fWrVv18ccfq1OnTiZMWjmXy/e7b775Rlu2bFFISMg1nqzqLpftyy%2B/1PHjx7V48WIFBQUpIiJCX331lXbt2qVbbrnFpGkrjyNYburAgQMqLi5Wq1atnGtRUVHas2ePSktLTZys6kJCQjRnzhxnufpdfn6%2BSRMZ7/XXX1evXr100003mT2KoXbs2KGgoCC1bdvWuTZ06FAlJyebOJUx/P39FRAQoBUrVujChQs6dOiQdu7cqaZNm5o9WqVt27ZN0dHRZY4w7tmzR82aNVNgYKBzLSoqSrt3777WI1ba5bL9fsnBxTzt%2B8vl8km/nVp78cUXNW7cOPn6%2BpowXdVcLtu2bdt01113KSgoyLk2c%2BZMxcXFXesRDcERLDdlt9tVq1Ytl/956tatq8LCQuXl5al27domTlc1wcHBiomJcd4uLS3VwoUL1a5dOxOnMs7mzZv1zTff6OOPP9b48ePNHsdQ2dnZatCggVatWqXZs2frwoULio2N1dNPPy1vb8/%2Bec3Pz0/jxo3ThAkTNH/%2BfJWUlCg2Nlb9%2BvUze7RKe/jhhy%2B5brfbFRoa6rJWp04dnThx4lqMZYjLZWvYsKEaNmzovP3zzz/rk08%2B8Zgjc7%2B7XD5Jmj17tpo1a6YOHTpcw4mMc7lsv39/mTx5sj766CPVqlVLCQkJ6tq16zWe0Bie/R3RwgoKCsr8ZPL77aKiIjNGumpSUlK0f/9%2B/eMf/zB7lCorLCzUSy%2B9pHHjxsnf39/scQx37tw5HTlyREuWLFFycrJGjx6tBQsWWOZi8KysLHXu3Fnp6elKTk7Wp59%2BqtWrV5s9luEu9/3Fat9bzp8/r5EjR6pu3boeexTkYpmZmVqyZImSkpLMHsVw586d08qVK3X69GnNnj1bvXv3VkJCgr799luzR6sUjmC5KT8/vzLf7H6/baV/uFNSUjRv3jxNnTrVI8%2BxXyw1NVW33367yxE6K7HZbMrPz9cbb7yhBg0aSPrtt34WL16sIUOGmDxd1WzevFnLli3Tl19%2BKX9/f7Vo0UInT57UrFmz9MADD5g9nqH8/PyUl5fnslZUVGSp7y1nz57V8OHD9cMPP%2BiDDz5QQECA2SNVmcPh0AsvvKCEhIQyl1hYgY%2BPj2rWrKnx48fL29tbzZs31zfffKMPP/zQI69npWC5qbCwMJ06dUrFxcWy2X57mux2u/z9/RUcHGzydMaYMGGCFi9erJSUFHXv3t3scQzxySefKDc313nt3O%2Bl%2BLPPPtOuXbvMHM0QISEh8vPzc5YrSWrcuLGOHz9u4lTG2Ldvnxo1auRSMpo1a6bZs2ebONXVERYWpszMTJe13NzcMqcNPVV%2Bfr6eeOIJ/fjjj5o3b57Cw8PNHskQx44d065du3Tw4EG9/vrrkn47GvnSSy9p7dq1mjNnjskTVk1oaKi8vLxcLjdo3LixDh48aOJUlUfBclNNmzaVzWbT7t271aZNG0m/XWDcokULj7/WRfrtSM%2BSJUs0ZcoUj/%2BtyD9asGCBiouLnbcnT54sSXr22WfNGslQkZGRKiws1OHDh9W4cWNJv/1W6B8Ll6cKDQ3VkSNHVFRU5Dx9dujQIZfreawiMjJSaWlpOn/%2BvLNQ7tixQ1FRUSZPVnWlpaUaMWKEjh49qgULFqhJkyZmj2SYsLAw/fvf/3ZZGzhwoAYOHGiJo6yRkZGaNWuWSkpK5OPjI%2Bm30/ae%2Bv3F8/%2BltqiAgAD17t1b48eP1969e7Vu3Tq9%2B%2B67GjRokNmjVVlWVpZmzpypJ598UlFRUbLb7c43T9egQQM1atTI%2BVajRg3VqFFDjRo1Mns0Q0RERKhTp05KSkrSgQMHtGHDBqWlpal///5mj1ZlXbp00XXXXacXXnhBhw8f1n/%2B8x/Nnj1bAwcONHs0w7Vt21b16tVTUlKSMjIylJaWpr1796pv375mj1Zly5Yt09atWzVx4kQFBwc7v7dcfErUE9lsNpfvL40aNZLNZlOdOnUUFhZm9nhV1rNnT5WWlurll1/WkSNHtGjRIm3YsEF///vfzR6tUjiC5caSkpI0fvx4PfroowoKCtLIkSN1zz33mD1Wla1fv14lJSWaNWuWZs2a5bLNUw8FVyeTJ0/WhAkT1L9/fwUEBOiRRx6xRAm5/vrr9f777%2BvVV19V3759Vbt2bT399NOWuTj6j3x8fDRz5kyNHTtWsbGxatSokWbMmKH69eubPVqVffbZZyotLdWwYcNc1tu2basFCxaYNBXKIygoSO%2B9957Gjx%2Bvnj17qn79%2Bpo6daqaN29u9miV4uWwyt%2B4AAAAcBOcIgQAADAYBQsAAMBgFCwAAACDUbAAAAAMRsECAAAwGAULAADAYBQsAAAAg1GwAAAADEbBAgAAMBgFCwAAwGAULAAAAINRsAAAAAxGwQIAADDY/wfzbz%2BZe5qKiQAAAABJRU5ErkJggg%3D%3D"/>
+        </div>
+        <div role="tabpanel" class="tab-pane col-md-12" id="common-3981909254352840990">
+            
+<table class="freq table table-hover">
+    <thead>
+    <tr>
+        <td class="fillremaining">Value</td>
+        <td class="number">Count</td>
+        <td class="number">Frequency (%)</td>
+        <td style="min-width:200px">&nbsp;</td>
+    </tr>
+    </thead>
+    <tr class="">
+        <td class="fillremaining">1.0</td>
+        <td class="number">125</td>
+        <td class="number">31.6%</td>
+        <td>
+            <div class="bar" style="width:100%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">2.0</td>
+        <td class="number">84</td>
+        <td class="number">21.2%</td>
+        <td>
+            <div class="bar" style="width:67%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">0.5</td>
+        <td class="number">43</td>
+        <td class="number">10.9%</td>
+        <td>
+            <div class="bar" style="width:35%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">1.5</td>
+        <td class="number">30</td>
+        <td class="number">7.6%</td>
+        <td>
+            <div class="bar" style="width:24%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">3.0</td>
+        <td class="number">22</td>
+        <td class="number">5.6%</td>
+        <td>
+            <div class="bar" style="width:18%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">4.0</td>
+        <td class="number">20</td>
+        <td class="number">5.1%</td>
+        <td>
+            <div class="bar" style="width:16%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">8.0</td>
+        <td class="number">18</td>
+        <td class="number">4.5%</td>
+        <td>
+            <div class="bar" style="width:15%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">5.0</td>
+        <td class="number">14</td>
+        <td class="number">3.5%</td>
+        <td>
+            <div class="bar" style="width:12%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">6.0</td>
+        <td class="number">13</td>
+        <td class="number">3.3%</td>
+        <td>
+            <div class="bar" style="width:11%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">2.5</td>
+        <td class="number">6</td>
+        <td class="number">1.5%</td>
+        <td>
+            <div class="bar" style="width:5%">&nbsp;</div>
+        </td>
+</tr><tr class="other">
+        <td class="fillremaining">Other values (8)</td>
+        <td class="number">21</td>
+        <td class="number">5.3%</td>
+        <td>
+            <div class="bar" style="width:17%">&nbsp;</div>
+        </td>
+</tr>
+</table>
+        </div>
+        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme-3981909254352840990">
+            <p class="h4">Minimum 5 values</p>
+            
+<table class="freq table table-hover">
+    <thead>
+    <tr>
+        <td class="fillremaining">Value</td>
+        <td class="number">Count</td>
+        <td class="number">Frequency (%)</td>
+        <td style="min-width:200px">&nbsp;</td>
+    </tr>
+    </thead>
+    <tr class="">
+        <td class="fillremaining">0.25</td>
+        <td class="number">1</td>
+        <td class="number">0.3%</td>
+        <td>
+            <div class="bar" style="width:1%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">0.5</td>
+        <td class="number">43</td>
+        <td class="number">10.9%</td>
+        <td>
+            <div class="bar" style="width:35%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">1.0</td>
+        <td class="number">125</td>
+        <td class="number">31.6%</td>
+        <td>
+            <div class="bar" style="width:100%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">1.5</td>
+        <td class="number">30</td>
+        <td class="number">7.6%</td>
+        <td>
+            <div class="bar" style="width:24%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">2.0</td>
+        <td class="number">84</td>
+        <td class="number">21.2%</td>
+        <td>
+            <div class="bar" style="width:67%">&nbsp;</div>
+        </td>
+</tr>
+</table>
+            <p class="h4">Maximum 5 values</p>
+            
+<table class="freq table table-hover">
+    <thead>
+    <tr>
+        <td class="fillremaining">Value</td>
+        <td class="number">Count</td>
+        <td class="number">Frequency (%)</td>
+        <td style="min-width:200px">&nbsp;</td>
+    </tr>
+    </thead>
+    <tr class="">
+        <td class="fillremaining">7.5</td>
+        <td class="number">2</td>
+        <td class="number">0.5%</td>
+        <td>
+            <div class="bar" style="width:12%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">8.0</td>
+        <td class="number">18</td>
+        <td class="number">4.5%</td>
+        <td>
+            <div class="bar" style="width:100%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">9.0</td>
+        <td class="number">5</td>
+        <td class="number">1.3%</td>
+        <td>
+            <div class="bar" style="width:28%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">10.0</td>
+        <td class="number">3</td>
+        <td class="number">0.8%</td>
+        <td>
+            <div class="bar" style="width:17%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">16.0</td>
+        <td class="number">1</td>
+        <td class="number">0.3%</td>
+        <td>
+            <div class="bar" style="width:6%">&nbsp;</div>
+        </td>
+</tr>
+</table>
+        </div>
+    </div>
+</div>
+</div><div class="row variablerow">
+    <div class="col-md-3 namecol">
+        <p class="h4 pp-anchor" id="pp_var_illustration">illustration<br/>
+            <small>Categorical</small>
+        </p>
+    </div><div class="col-md-3">
+    <table class="stats ">
+        <tr class="">
+            <th>Distinct count</th>
+            <td>2</td>
+        </tr>
+        <tr>
+            <th>Unique (%)</th>
+            <td>0.5%</td>
+        </tr>
+        <tr class="ignore">
+            <th>Missing (%)</th>
+            <td>0.0%</td>
+        </tr>
+        <tr class="ignore">
+            <th>Missing (n)</th>
+            <td>0</td>
+        </tr>
+    </table>
+</div>
+<div class="col-md-6 collapse in" id="minifreqtable6604837466972878842">
+    <table class="mini freq">
+        <tr class="">
+    <th>no</th>
+    <td>
+        <div class="bar" style="width:100%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 90.9%">
+            360
+        </div>
+        
+    </td>
+</tr><tr class="">
+    <th>yes</th>
+    <td>
+        <div class="bar" style="width:10%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 9.1%">
+            &nbsp;
+        </div>
+        36
+    </td>
+</tr>
+    </table>
+</div>
+<div class="col-md-12 text-right">
+    <a role="button" data-toggle="collapse" data-target="#freqtable6604837466972878842, #minifreqtable6604837466972878842"
+       aria-expanded="true" aria-controls="collapseExample">
+        Toggle details
+    </a>
+</div>
+<div class="col-md-12 extrapadding collapse" id="freqtable6604837466972878842">
+    
+<table class="freq table table-hover">
+    <thead>
+    <tr>
+        <td class="fillremaining">Value</td>
+        <td class="number">Count</td>
+        <td class="number">Frequency (%)</td>
+        <td style="min-width:200px">&nbsp;</td>
+    </tr>
+    </thead>
+    <tr class="">
+        <td class="fillremaining">no</td>
+        <td class="number">360</td>
+        <td class="number">90.9%</td>
+        <td>
+            <div class="bar" style="width:100%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">yes</td>
+        <td class="number">36</td>
+        <td class="number">9.1%</td>
+        <td>
+            <div class="bar" style="width:10%">&nbsp;</div>
+        </td>
+</tr>
+</table>
+</div>
+</div><div class="row variablerow">
+    <div class="col-md-3 namecol">
+        <p class="h4 pp-anchor" id="pp_var_page no.(location)">page no.(location)<br/>
+            <small>Categorical</small>
+        </p>
+    </div><div class="col-md-3">
+    <table class="stats ">
+        <tr class="">
+            <th>Distinct count</th>
+            <td>28</td>
+        </tr>
+        <tr>
+            <th>Unique (%)</th>
+            <td>7.1%</td>
+        </tr>
+        <tr class="ignore">
+            <th>Missing (%)</th>
+            <td>0.0%</td>
+        </tr>
+        <tr class="ignore">
+            <th>Missing (n)</th>
+            <td>0</td>
+        </tr>
+    </table>
+</div>
+<div class="col-md-6 collapse in" id="minifreqtable-6597637968240563395">
+    <table class="mini freq">
+        <tr class="">
+    <th>3</th>
+    <td>
+        <div class="bar" style="width:20%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 12.9%">
+            &nbsp;
+        </div>
+        51
+    </td>
+</tr><tr class="">
+    <th>1</th>
+    <td>
+        <div class="bar" style="width:17%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 10.9%">
+            &nbsp;
+        </div>
+        43
+    </td>
+</tr><tr class="">
+    <th>13</th>
+    <td>
+        <div class="bar" style="width:15%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 9.6%">
+            &nbsp;
+        </div>
+        38
+    </td>
+</tr><tr class="other">
+    <th>Other values (25)</th>
+    <td>
+        <div class="bar" style="width:100%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 66.7%">
+            264
+        </div>
+        
+    </td>
+</tr>
+    </table>
+</div>
+<div class="col-md-12 text-right">
+    <a role="button" data-toggle="collapse" data-target="#freqtable-6597637968240563395, #minifreqtable-6597637968240563395"
+       aria-expanded="true" aria-controls="collapseExample">
+        Toggle details
+    </a>
+</div>
+<div class="col-md-12 extrapadding collapse" id="freqtable-6597637968240563395">
+    
+<table class="freq table table-hover">
+    <thead>
+    <tr>
+        <td class="fillremaining">Value</td>
+        <td class="number">Count</td>
+        <td class="number">Frequency (%)</td>
+        <td style="min-width:200px">&nbsp;</td>
+    </tr>
+    </thead>
+    <tr class="">
+        <td class="fillremaining">3</td>
+        <td class="number">51</td>
+        <td class="number">12.9%</td>
+        <td>
+            <div class="bar" style="width:44%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">1</td>
+        <td class="number">43</td>
+        <td class="number">10.9%</td>
+        <td>
+            <div class="bar" style="width:38%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">13</td>
+        <td class="number">38</td>
+        <td class="number">9.6%</td>
+        <td>
+            <div class="bar" style="width:33%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">2</td>
+        <td class="number">26</td>
+        <td class="number">6.6%</td>
+        <td>
+            <div class="bar" style="width:23%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">18</td>
+        <td class="number">24</td>
+        <td class="number">6.1%</td>
+        <td>
+            <div class="bar" style="width:21%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">4</td>
+        <td class="number">23</td>
+        <td class="number">5.8%</td>
+        <td>
+            <div class="bar" style="width:20%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">15</td>
+        <td class="number">22</td>
+        <td class="number">5.6%</td>
+        <td>
+            <div class="bar" style="width:19%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">5</td>
+        <td class="number">22</td>
+        <td class="number">5.6%</td>
+        <td>
+            <div class="bar" style="width:19%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">6</td>
+        <td class="number">17</td>
+        <td class="number">4.3%</td>
+        <td>
+            <div class="bar" style="width:15%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">11</td>
+        <td class="number">15</td>
+        <td class="number">3.8%</td>
+        <td>
+            <div class="bar" style="width:13%">&nbsp;</div>
+        </td>
+</tr><tr class="other">
+        <td class="fillremaining">Other values (18)</td>
+        <td class="number">115</td>
+        <td class="number">29.0%</td>
+        <td>
+            <div class="bar" style="width:100%">&nbsp;</div>
+        </td>
+</tr>
+</table>
+</div>
+</div><div class="row variablerow">
+    <div class="col-md-3 namecol">
+        <p class="h4 pp-anchor" id="pp_var_photograph">photograph<br/>
+            <small>Categorical</small>
+        </p>
+    </div><div class="col-md-3">
+    <table class="stats ">
+        <tr class="">
+            <th>Distinct count</th>
+            <td>3</td>
+        </tr>
+        <tr>
+            <th>Unique (%)</th>
+            <td>0.8%</td>
+        </tr>
+        <tr class="ignore">
+            <th>Missing (%)</th>
+            <td>0.0%</td>
+        </tr>
+        <tr class="ignore">
+            <th>Missing (n)</th>
+            <td>0</td>
+        </tr>
+    </table>
+</div>
+<div class="col-md-6 collapse in" id="minifreqtable-6706957572766991000">
+    <table class="mini freq">
+        <tr class="">
+    <th>yes</th>
+    <td>
+        <div class="bar" style="width:100%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 67.7%">
+            268
+        </div>
+        
+    </td>
+</tr><tr class="">
+    <th>no</th>
+    <td>
+        <div class="bar" style="width:47%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 31.8%">
+            126
+        </div>
+        
+    </td>
+</tr><tr class="">
+    <th>no </th>
+    <td>
+        <div class="bar" style="width:1%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 0.5%">
+            &nbsp;
+        </div>
+        2
+    </td>
+</tr>
+    </table>
+</div>
+<div class="col-md-12 text-right">
+    <a role="button" data-toggle="collapse" data-target="#freqtable-6706957572766991000, #minifreqtable-6706957572766991000"
+       aria-expanded="true" aria-controls="collapseExample">
+        Toggle details
+    </a>
+</div>
+<div class="col-md-12 extrapadding collapse" id="freqtable-6706957572766991000">
+    
+<table class="freq table table-hover">
+    <thead>
+    <tr>
+        <td class="fillremaining">Value</td>
+        <td class="number">Count</td>
+        <td class="number">Frequency (%)</td>
+        <td style="min-width:200px">&nbsp;</td>
+    </tr>
+    </thead>
+    <tr class="">
+        <td class="fillremaining">yes</td>
+        <td class="number">268</td>
+        <td class="number">67.7%</td>
+        <td>
+            <div class="bar" style="width:100%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">no</td>
+        <td class="number">126</td>
+        <td class="number">31.8%</td>
+        <td>
+            <div class="bar" style="width:47%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">no </td>
+        <td class="number">2</td>
+        <td class="number">0.5%</td>
+        <td>
+            <div class="bar" style="width:1%">&nbsp;</div>
+        </td>
+</tr>
+</table>
+</div>
+</div><div class="row variablerow">
+    <div class="col-md-3 namecol">
+        <p class="h4 pp-anchor" id="pp_var_quadrant">quadrant<br/>
+            <small>Categorical</small>
+        </p>
+    </div><div class="col-md-3">
+    <table class="stats ">
+        <tr class="">
+            <th>Distinct count</th>
+            <td>12</td>
+        </tr>
+        <tr>
+            <th>Unique (%)</th>
+            <td>3.0%</td>
+        </tr>
+        <tr class="ignore">
+            <th>Missing (%)</th>
+            <td>0.0%</td>
+        </tr>
+        <tr class="ignore">
+            <th>Missing (n)</th>
+            <td>0</td>
+        </tr>
+    </table>
+</div>
+<div class="col-md-6 collapse in" id="minifreqtable4651949212205857159">
+    <table class="mini freq">
+        <tr class="">
+    <th>2</th>
+    <td>
+        <div class="bar" style="width:100%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 38.4%">
+            152
+        </div>
+        
+    </td>
+</tr><tr class="">
+    <th>1</th>
+    <td>
+        <div class="bar" style="width:59%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 22.7%">
+            90
+        </div>
+        
+    </td>
+</tr><tr class="">
+    <th>1, 2</th>
+    <td>
+        <div class="bar" style="width:39%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 14.9%">
+            59
+        </div>
+        
+    </td>
+</tr><tr class="other">
+    <th>Other values (9)</th>
+    <td>
+        <div class="bar" style="width:62%" data-toggle="tooltip" data-placement="right" data-html="true"
+             data-delay=500 title="Percentage: 24.0%">
+            95
+        </div>
+        
+    </td>
+</tr>
+    </table>
+</div>
+<div class="col-md-12 text-right">
+    <a role="button" data-toggle="collapse" data-target="#freqtable4651949212205857159, #minifreqtable4651949212205857159"
+       aria-expanded="true" aria-controls="collapseExample">
+        Toggle details
+    </a>
+</div>
+<div class="col-md-12 extrapadding collapse" id="freqtable4651949212205857159">
+    
+<table class="freq table table-hover">
+    <thead>
+    <tr>
+        <td class="fillremaining">Value</td>
+        <td class="number">Count</td>
+        <td class="number">Frequency (%)</td>
+        <td style="min-width:200px">&nbsp;</td>
+    </tr>
+    </thead>
+    <tr class="">
+        <td class="fillremaining">2</td>
+        <td class="number">152</td>
+        <td class="number">38.4%</td>
+        <td>
+            <div class="bar" style="width:100%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">1</td>
+        <td class="number">90</td>
+        <td class="number">22.7%</td>
+        <td>
+            <div class="bar" style="width:59%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">1, 2</td>
+        <td class="number">59</td>
+        <td class="number">14.9%</td>
+        <td>
+            <div class="bar" style="width:39%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">3</td>
+        <td class="number">42</td>
+        <td class="number">10.6%</td>
+        <td>
+            <div class="bar" style="width:28%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">4</td>
+        <td class="number">28</td>
+        <td class="number">7.1%</td>
+        <td>
+            <div class="bar" style="width:19%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">3, 4</td>
+        <td class="number">14</td>
+        <td class="number">3.5%</td>
+        <td>
+            <div class="bar" style="width:10%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">2, 3</td>
+        <td class="number">3</td>
+        <td class="number">0.8%</td>
+        <td>
+            <div class="bar" style="width:2%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">1, 2, 3, 4</td>
+        <td class="number">3</td>
+        <td class="number">0.8%</td>
+        <td>
+            <div class="bar" style="width:2%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">1, 3</td>
+        <td class="number">2</td>
+        <td class="number">0.5%</td>
+        <td>
+            <div class="bar" style="width:2%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">1, 2, 4</td>
+        <td class="number">1</td>
+        <td class="number">0.3%</td>
+        <td>
+            <div class="bar" style="width:1%">&nbsp;</div>
+        </td>
+</tr><tr class="other">
+        <td class="fillremaining">Other values (2)</td>
+        <td class="number">2</td>
+        <td class="number">0.5%</td>
+        <td>
+            <div class="bar" style="width:2%">&nbsp;</div>
+        </td>
+</tr>
+</table>
+</div>
+</div><div class="row variablerow">
+    <div class="col-md-3 namecol">
+        <p class="h4 pp-anchor" id="pp_var_width (columns)">width (columns)<br/>
+            <small>Numeric</small>
+        </p>
+    </div><div class="col-md-6">
+    <div class="row">
+        <div class="col-sm-6">
+            <table class="stats ">
+                <tr>
+                    <th>Distinct count</th>
+                    <td>13</td>
+                </tr>
+                <tr>
+                    <th>Unique (%)</th>
+                    <td>3.3%</td>
+                </tr>
+                <tr class="ignore">
+                    <th>Missing (%)</th>
+                    <td>0.0%</td>
+                </tr>
+                <tr class="ignore">
+                    <th>Missing (n)</th>
+                    <td>0</td>
+                </tr>
+                <tr class="ignore">
+                    <th>Infinite (%)</th>
+                    <td>0.0%</td>
+                </tr>
+                <tr class="ignore">
+                    <th>Infinite (n)</th>
+                    <td>0</td>
+                </tr>
+            </table>
+
+        </div>
+        <div class="col-sm-6">
+            <table class="stats ">
+
+                <tr>
+                    <th>Mean</th>
+                    <td>2.0864</td>
+                </tr>
+                <tr>
+                    <th>Minimum</th>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <th>Maximum</th>
+                    <td>8</td>
+                </tr>
+                <tr class="ignore">
+                    <th>Zeros (%)</th>
+                    <td>0.0%</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="col-md-3 collapse in" id="minihistogram-6523711269026865723">
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABLCAYAAAA1fMjoAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAPYQAAD2EBqD%2BnaQAAADl0RVh0U29mdHdhcmUAbWF0cGxvdGxpYiB2ZXJzaW9uIDIuMi4yLCBodHRwOi8vbWF0cGxvdGxpYi5vcmcvhp/UCwAAASdJREFUeJzt3MEJwkAQQFEVS7IIe/JsTxZhT%2Btd5IMBzRrfuwfmkM9sIOx%2BjDF2wEuHtQeAmR3XHuDZ6XJ7%2B5n79fyBScAGgSQQCAKBIBAIAoEgEAgCgSAQCAKBIBAI0/1qsoTfU/gUGwSCQCAIBIJAIAgEgkAgCASCQCAIBIJAIAgEgkAgCASCQCAIBIJAIAgEgkAgCASCQCAIBIJAIAgEgkAgCASCQCAIBIJAIGzi8uolvnHhtUu1f58NAkEgEP72iDUrx7K52CAQbJA/tGRLLbGFzSaQN3zrxdqKLRwX92OMsfYQMCvfIBAEAkEgEAQCQSAQBAJBIBAEAkEgEAQCQSAQBAJBIBAEAkEgEAQCQSAQBAJBIBAEAkEgEAQCQSAQBAJBIBAemQIfAHuDPiEAAAAASUVORK5CYII%3D">
+
+</div>
+<div class="col-md-12 text-right">
+    <a role="button" data-toggle="collapse" data-target="#descriptives-6523711269026865723,#minihistogram-6523711269026865723"
+       aria-expanded="false" aria-controls="collapseExample">
+        Toggle details
+    </a>
+</div>
+<div class="row collapse col-md-12" id="descriptives-6523711269026865723">
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#quantiles-6523711269026865723"
+                                                  aria-controls="quantiles-6523711269026865723" role="tab"
+                                                  data-toggle="tab">Statistics</a></li>
+        <li role="presentation"><a href="#histogram-6523711269026865723" aria-controls="histogram-6523711269026865723"
+                                   role="tab" data-toggle="tab">Histogram</a></li>
+        <li role="presentation"><a href="#common-6523711269026865723" aria-controls="common-6523711269026865723"
+                                   role="tab" data-toggle="tab">Common Values</a></li>
+        <li role="presentation"><a href="#extreme-6523711269026865723" aria-controls="extreme-6523711269026865723"
+                                   role="tab" data-toggle="tab">Extreme Values</a></li>
+
+    </ul>
+
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active row" id="quantiles-6523711269026865723">
+            <div class="col-md-4 col-md-offset-1">
+                <p class="h4">Quantile statistics</p>
+                <table class="stats indent">
+                    <tr>
+                        <th>Minimum</th>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <th>5-th percentile</th>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <th>Q1</th>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <th>Median</th>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <th>Q3</th>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <th>95-th percentile</th>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <th>Maximum</th>
+                        <td>8</td>
+                    </tr>
+                    <tr>
+                        <th>Range</th>
+                        <td>7</td>
+                    </tr>
+                    <tr>
+                        <th>Interquartile range</th>
+                        <td>1</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-4 col-md-offset-2">
+                <p class="h4">Descriptive statistics</p>
+                <table class="stats indent">
+                    <tr>
+                        <th>Standard deviation</th>
+                        <td>1.4188</td>
+                    </tr>
+                    <tr>
+                        <th>Coef of variation</th>
+                        <td>0.68006</td>
+                    </tr>
+                    <tr>
+                        <th>Kurtosis</th>
+                        <td>3.4277</td>
+                    </tr>
+                    <tr>
+                        <th>Mean</th>
+                        <td>2.0864</td>
+                    </tr>
+                    <tr>
+                        <th>MAD</th>
+                        <td>0.98269</td>
+                    </tr>
+                    <tr class="">
+                        <th>Skewness</th>
+                        <td>1.8473</td>
+                    </tr>
+                    <tr>
+                        <th>Sum</th>
+                        <td>826.2</td>
+                    </tr>
+                    <tr>
+                        <th>Variance</th>
+                        <td>2.0131</td>
+                    </tr>
+                    <tr>
+                        <th>Memory size</th>
+                        <td>3.2 KiB</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane col-md-8 col-md-offset-2" id="histogram-6523711269026865723">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAAGQCAYAAAByNR6YAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAPYQAAD2EBqD%2BnaQAAADl0RVh0U29mdHdhcmUAbWF0cGxvdGxpYiB2ZXJzaW9uIDIuMi4yLCBodHRwOi8vbWF0cGxvdGxpYi5vcmcvhp/UCwAAIABJREFUeJzt3Xl0VGWexvGnSJHdsJnQEDzEgGDaRgwg4GCEpKMg4gIME6FZFBVRIEcJsroTjQ2ogGGRZVoFxTSKqEi3I7aN0LIJAtIskgQRWiGVli0QEpLU/GFTM2WwCfCmblXd7%2BecOjP1VuXW80uR9sm9t24cbrfbLQAAABhTx%2BoAAAAAwYaCBQAAYBgFCwAAwDAKFgAAgGEULAAAAMMoWAAAAIZRsAAAAAyjYAEAABhGwQIAADCMggUAAGAYBQsAAMAwChYAAIBhFCwAAADDKFgAAACGUbAAAAAMo2ABAAAYRsECAAAwjIIFAABgGAULAADAMAoWAACAYRQsAAAAwyhYAAAAhlGwAAAADKNgAQAAGEbBAgAAMIyCBQAAYBgFCwAAwDAKFgAAgGEULAAAAMMoWAAAAIZRsAAAAAyjYAEAABhGwQIAADCMggUAAGAYBQsAAMAwChYAAIBhFCwAAADDKFgAAACGUbAAAAAMc1odwC5crhPGt1mnjkMNG0bpxx9PqqrKbXz7/oq57TW3ZN/Z7Tq3ZN/Zmdv83LGxlxndXk2xByuA1anjkMPhUJ06Dquj%2BBRz22tuyb6z23Vuyb6zM3fwzE3BAgAAMIyCBQAAYBgFCwAAwDAKFgAAgGEULAAAAMMoWAAAAIZRsAAAAAyjYAEAABgW9FdyLy8vV58%2BffTEE0%2BoU6dOGj9%2BvN57771qz%2BvUqZPeeOMNSVKHDh104oT3lde3bNmiqKgon2QGAACBLagLVllZmbKysrR3717P2qRJk5SVleW5/49//EODBg3S4MGDJUmHDx/WiRMntGrVKoWHh3ueFxkZ6bvgAAAgoAVtwcrPz1dWVpbcbu%2B/aXTZZZfpssv%2B7%2B8SjR8/Xj169FB6erokqaCgQLGxsbriiit8mhcAAASPoD0Ha%2BPGjerUqZPy8vJ%2B8Tnr1q3Tpk2bNHr0aM9afn6%2BrrzySl9EBAAAQSpo92ANGDDgvM%2BZN2%2BeevfurSZNmnjWCgoKVFpaqkGDBmnfvn1KSkrSxIkTL6h0FRUVyeVyea05nZGKi4ur%2BQA1EBJSx%2Bv/2gVz22tuyb6z23Vuyb6zM3fwzB20Bet8Dhw4oPXr12vSpEle64WFhTp27JhGjx6t6OhozZ8/X/fcc48%2B%2BugjRUdH12jbeXl5ys3N9VobMWKEMjMzjeU/q8OkPxvfZm358rkeRrcXExNhdHuBwq5zS/ad3a5zS/adnbkDn20L1scff6ykpCS1bNnSa33hwoU6c%2BaM5xOD06ZNU9euXfXZZ5/p9ttvr9G2MzIylJaW5rXmdEbqyJGTZsL/S6A1fVPzh4TUUUxMhI4fL1VlZZWRbQYCu84t2Xd2u84t2Xd25jY/d4MG1lwBwLYFa82aNfrtb39bbT00NFShoaGe%2B2FhYWrWrJkOHz5c423HxcVVOxzocp1QRYV9fljOxfT8lZVVtvye2nVuyb6z23Vuyb6zM3fgC6xdIIa43W59/fXXateuXbX19PR0LVu2zLN26tQp7d%2B/X4mJib6OCQAAApQt92D94x//0MmTJ6sdHnQ4HOrWrZteeeUVxcfHq2HDhpoxY4Z%2B9atfqWvXrhalBQAAgcaWBeuf//ynJKlevXrVHnvsscfkdDqVlZWlkpISde7cWfPmzVNISIivYwIAgABli4K1Z88er/tt27attnZWWFiYxo8fr/Hjx/siGgAACEK2PAcLAACgNlGwAAAADKNgAQAAGEbBAgAAMIyCBQAAYBgFCwAAwDAKFgAAgGEULAAAAMMoWAAAAIZRsAAAAAyjYAEAABhGwQIAADCMggUAAGAYBQsAAMAwChYAAIBhFCwAAADDKFgAAACGUbAAAAAMo2ABAAAYRsECAAAwjIIFAABgGAULAADAMAoWAACAYRQsAAAAwyhYAAAAhlGwAAAADKNgAQAAGEbBAgAAMIyCBQAAYBgFCwAAwDAKFgAAgGFBX7DKy8vVq1cvbdiwwbOWnZ2t1q1be90WL17seXzFihVKT09X27ZtNWLECP34449WRAcAAAEqqAtWWVmZRo8erb1793qtFxQUKCsrS2vXrvXc%2BvbtK0navn27Jk2apJEjRyovL0/Hjx/XhAkTrIgPAAAClNPqALUlPz9fWVlZcrvd1R4rKCjQfffdp9jY2GqPLV68WLfeeqvuuusuSdKUKVOUmpqqAwcO6Iorrqj13AAAIPAF7R6sjRs3qlOnTsrLy/NaLykp0eHDh5WQkHDOr9u2bZs6dOjgud%2BkSRM1bdpU27Ztq824AAAgiATtHqwBAwacc72goEAOh0Nz587V559/rvr16%2Bvee%2B9V7969JUlFRUWKi4vz%2BppGjRrp0KFDtZ4ZAAAEh6AtWL%2BksLBQDodDiYmJGjhwoDZt2qQnnnhC0dHRuvnmm3X69GmFhoZ6fU1oaKjKy8tr/BpFRUVyuVxea05nZLXidqlCQgJrB6TTaSbv2bkDbf5LZde5JfvObte5JfvOztzBM7ftCtZdd92l1NRU1a9fX5J09dVX69tvv9WSJUt08803KywsrFqZKi8vV0RERI1fIy8vT7m5uV5rI0aMUGZm5qUPEMAaNIgyur2YmJq/J8HErnNL9p3drnNL9p2duQOf7QqWw%2BHwlKuzEhMTtX79eklS48aNVVxc7PV4cXHxOU%2BI/yUZGRlKS0vzWnM6I3XkyMmLTH1ugdb0Tc0fElJHMTEROn68VJWVVUa2GQjsOrdk39ntOrdk39mZ2/zcpn%2B5rynbFawZM2boq6%2B%2B0muvveZZ2717txITEyVJbdu21ebNm9WnTx9J0g8//KAffvhBbdu2rfFrxMXFVTsc6HKdUEWFfX5YzsX0/JWVVbb8ntp1bsm%2Bs9t1bsm%2BszN34AusXSAGpKamatOmTVq4cKG%2B%2B%2B47vfXWW1q%2BfLmGDh0qSerfv7/ef/99LV26VLt379bYsWPVrVs3LtEAAABqzHZ7sK699lrNmDFDM2fO1IwZMxQfH68XX3xRycnJkqTk5GQ9%2B%2Byzmjlzpo4dO6YuXbpo8uTJFqcGAACBxBYFa8%2BePV7309PTlZ6e/ovP79Onj%2BcQIQAAwIWy3SFCAACA2kbBAgAAMIyCBQAAYBgFCwAAwDAKFgAAgGEULAAAAMMoWAAAAIZRsAAAAAyjYAEAABhGwQIAADCMggUAAGAYBQsAAMAwChYAAIBhFCwAAADDKFgAAACGUbAAAAAMo2ABAAAYRsECAAAwjIIFAABgGAULAADAMKfVAWAft07/m9URLsifHulidQQAQIBiDxYAAIBhFCwAAADDKFgAAACGUbAAAAAMo2ABAAAYRsECAAAwjIIFAABgGAULAADAMAoWAACAYRQsAAAAwyhYAAAAhgV9wSovL1evXr20YcMGz9rWrVt19913Kzk5Wd27d9fSpUu9vuaOO%2B5Q69atvW7ffPONr6MDAIAAFdR/7LmsrExZWVnau3evZ83lcumBBx5Q//799cILL%2Bjvf/%2B7JkyYoNjYWHXr1k2VlZX69ttvtXjxYiUkJHi%2BrkGDBhZMAAAAAlHQFqz8/HxlZWXJ7XZ7ra9atUqXX365Ro8eLUlKSEjQhg0b9OGHH6pbt246ePCgzpw5o2uvvVZhYWFWRAcAAAEuaAvWxo0b1alTJz366KO67rrrPOspKSlKSkqq9vySkhJJPxWzJk2aUK4AAMBFC9qCNWDAgHOuN2vWTM2aNfPc/%2Bc//6mPPvpIo0aNkiQVFBSobt26evDBB7Vjxw5deeWVGjt2rK699toav3ZRUZFcLpfXmtMZqbi4uIuY5JeFhAT9KXSWcjr96/t79v224/tu19ntOrdk39mZO3jmDtqCVROnT5/WqFGjdPnllysjI0OStG/fPh07dkz9%2BvVTZmam/vjHP2rIkCFauXKlmjRpUqPt5uXlKTc312ttxIgRyszMND4Dak%2BDBlFWRzinmJgIqyNYxq6z23Vuyb6zM3fgs23BOnnypB5%2B%2BGF9%2B%2B23euuttxQR8dObOnnyZJ0%2BfVrR0dGSpKefflpbtmzR%2B%2B%2B/r%2BHDh9do2xkZGUpLS/NaczojdeTISaMzBFPT90em369LFRJSRzExETp%2BvFSVlVVWx/Epu85u17kl%2B87O3ObntuqXZVsWrJKSEt1///367rvv9Prrr3t9WtDpdHrKlSQ5HA4lJibq8OHDNd5%2BXFxctcOBLtcJVVTY54clGPjr%2B1VZWeW32WqbXWe369ySfWdn7sBnu10gVVVVGjlypA4ePKhFixbpqquu8np80KBBXof3qqqqtGfPHiUmJvo6KgAACFC224P1zjvvaMOGDZozZ45iYmI8J6PXrVtX9evXV1pammbNmqWkpCRdeeWVeuONN3TixAn17t3b4uQAACBQ2K5gffzxx6qqqtKDDz7otd6xY0ctWrRI99xzj8rKypSdna3i4mK1bdtWf/jDH7wOGwIAAPw7tihYe/bs8fz/Cxcu/LfPdTgcGj58eI1PaAcAAPg5252DBQAAUNsoWAAAAIZRsAAAAAyjYAEAABhGwQIAADCMggUAAGAYBQsAAMAwChYAAIBhFCwAAADDKFgAAACGUbAAAAAMo2ABAAAYRsECAAAwjIIFAABgGAULAADAMAoWAACAYRQsAAAAwyhYAAAAhvldwerXr5/efvttnThxwuooAAAAF8XvClbnzp01d%2B5c3XjjjRo9erTWrl0rt9ttdSwAAIAa87uClZWVpc8%2B%2B0yzZ89WSEiIRo0apW7duunll1/Wvn37rI4HAABwXk6rA5yLw%2BFQly5d1KVLF5WWlmrRokWaPXu25s2bp3bt2mnIkCG65ZZbrI4JAABwTn5ZsCSpqKhIH3zwgT744AN98803ateunXr37q1Dhw7p8ccf16ZNmzRp0iSrYwIAAFTjdwXr/fff1/vvv68NGzaoYcOGuuuuuzRz5kwlJCR4ntOkSRM999xzFCwAAOCX/K5gTZo0SampqZo1a5Zuuukm1alT/TSxxMREDRw40IJ0AAAA5%2Bd3Bevzzz9XgwYNdPToUU%2B52r59u6655hqFhIRIktq1a6d27dpZGRMAAOAX%2Bd2nCEtKStSjRw/Nnz/fszZs2DDdeeed%2BuGHHyxMBgAAUDN%2BV7Cef/55NW/eXPfee69nbeXKlWrSpIlycnIsTAYAAFAzflewvvzyS40fP16xsbGetYYNG2rs2LFav369hckAAABqxu8KltPp1PHjx6utl5aWckV3AAAQEPyuYN10003Kzs7Wd99951k7cOCAcnJylJKSYmEyAACAmvG7gjVu3DiVl5ere/fu6tSpkzp16qRbbrlFZ86c0YQJEy54e%2BXl5erVq5c2bNjgWTtw4IDuueceXXfdderZs6fWrl3r9TVffPGFevXqpbZt22rw4ME6cODAJc8FAADsw%2B8u09CoUSO99957%2BuKLL7R37145nU61bNlSN9xwgxwOxwVtq6ysTFlZWdq7d69nze12a8SIEWrVqpXeffddrVq1SiNHjtTKlSvVtGlTff/99xoxYoRGjRqllJQUzZo1Sw8//LA%2B%2BOCDC359AABgT35XsCQpJCREKSkpl3RIMD8/X1lZWdXO21q/fr0OHDigt99%2BW5GRkWrRooXWrVund999V6NGjdLSpUv1m9/8RkOHDpUk5eTkqEuXLtq4caM6dep0SXMBAAB78LuC5XK5NH36dG3ZskVnzpypVpA%2B/fTTGm3nbCF69NFHdd1113nWt23bpl//%2BteKjIz0rLVv315bt271PN6hQwfPYxEREbrmmmu0detWChYAAKgRvytYTzzxhHbs2KHbbrtNl1122UVvZ8CAAedcd7lciouL81pr1KiRDh06VKPHAQAAzsfvCtb69eu1YMECr71IJpWWlio0NNRrLTQ0VOXl5TV6vCaKiorkcrm81pzOyGrF7VKFhPjdZxSCitPpX9/fs%2B%2B3Hd93u85u17kl%2B87O3MEzt98VrMjISDVq1KjWth8WFqajR496rZWXlys8PNzz%2BM/LVHl5uWJiYmr8Gnl5ecrNzfVaGzFihDIzMy8yNazQoEGU1RHOKSYmwuoIlrHr7HadW7Lv7Mwd%2BPyuYN15551asGCBnn32Wc8fdzapcePGys/P91orLi727F1q3LixiouLqz2elJRU49fIyMhQWlqa15rTGakjR05eZOpzC6am749Mv1%2BXKiSkjmJiInT8eKkqK6usjuNTdp3drnNL9p2duc3PbdUvy35XsI4ePaoVK1bor3/9q6644opqh%2BveeOONS9p%2B27ZtNW/ePJ0%2Bfdqz12rz5s1q37695/HNmzd7nl9aWqqdO3dq5MiRNX6NuLi4aocDXa4Tqqiwzw9LMPDX96uysspvs9U2u85u17kl%2B87O3IHP7wqWJPXq1avWtt2xY0c1adJEEyZM0MMPP6zPPvtM27dv9/wh6b59%2B2rhwoWaN2%2BeUlNTNWvWLDVr1oxPEAIAgBrzu4J1tujUlpCQEM2ePVuTJk1Snz591Lx5c82aNUtNmzaVJDVr1kyvvPKKnn/%2Bec2aNUvJycmaNWsWFxkFAAA15ncFS/rpU3h//OMftW/fPk2cOFGbNm1Sq1atlJiYeFHb27Nnj9f95s2ba/Hixb/4/K5du6pr164X9VoAAAB%2Bd5b0/v37dfvtt%2Bu9997Txx9/rFOnTmnlypXq27evtm3bZnU8AACA8/K7gvXCCy8oPT1dq1atUt26dSVJL730ktLS0jRt2jSL0wEAAJyf3xWsLVu26N577/U658npdOrhhx/Wzp07LUwGAABQM35XsKqqqlRVVf0jmidPnqyV62IBAACY5ncF68Ybb9Srr77qVbKOHj2qqVOnqnPnzhYmAwAAqBm/K1jjx4/Xjh07dOONN6qsrEwPPfSQUlNTdfDgQY0bN87qeAAAAOfld5dpaNy4sZYvX64VK1Zo165dqqqqUv/%2B/XXnnXcqOjra6ngAAADn5XcFS5IiIiLUr18/q2MAAABcFL8rWIMHD/63j1/q3yIEAACobX5XsOLj473uV1RUaP/%2B/frmm280ZMgQi1IBAADUnN8VrF/6W4SzZs3SoUOHfJwGAADgwvndpwh/yZ133qk//elPVscAAAA4r4ApWF999RUXGgUAAAHB7w4Rnusk95KSEu3Zs0cDBgywIBEAAMCF8buC1bRpU6%2B/QyhJdevW1cCBA3XHHXdYlAoAAKDm/K5gvfDCC1ZHAAAAuCR%2BV7A2bdpU4%2Bdef/31tZgEAADg4vhdwRo0aJDnEKHb7fas/3zN4XBo165dvg8IAABwHn5XsObOnavs7Gw99thj6tixo0JDQ/X111/r2WefVe/evdWzZ0%2BrIwIAAPxbfneZhpycHD355JPq3r27GjRooKioKHXu3FnPPvuslixZovj4eM8NAADAH/ldwSoqKjpneYqOjtaRI0csSAQAAHBh/K5gXXfddXrppZdUUlLiWTt69KimTp2qG264wcJkAAAANeN352A9/vjjGjx4sG666SYlJCTI7Xbr22%2B/VWxsrN544w2r4wEAAJyX3xWsFi1aaOXKlVqxYoUKCgokSb/73e902223KSIiwuJ0AAAA5%2Bd3BUuS6tWrp379%2BungwYO64oorJP10NXcAAIBA4HfnYLndbk2bNk3XX3%2B9evXqpUOHDmncuHGaNGmSzpw5Y3U8AACA8/K7grVo0SK9//77euqppxQaGipJSk9P16pVq5Sbm2txOgAAgPPzu4KVl5enJ598Un369PFcvb1nz57Kzs7Whx9%2BaHE6AACA8/O7gnXw4EElJSVVW7/66qvlcrksSAQAAHBh/K5gxcfH6%2Buvv662/vnnn3tOeAcAAPBnfvcpwvvuu0/PPPOMXC6X3G631q1bp7y8PC1atEjjx4%2B3Oh4AAMB5%2BV3B6tu3ryoqKjRnzhydPn1aTz75pBo2bKhHHnlE/fv3tzoeAADAefldwVqxYoV69OihjIwM/fjjj3K73WrUqJHR11i2bJkmTJhQbd3hcGj37t166KGH9Je//MXrsblz5yo1NdVoDgAAEJz8rmA9%2B%2Byzeuutt1SvXj01bNiwVl6jZ8%2BeSklJ8dyvqKjQkCFD1K1bN0lSQUFBtb99WK9evVrJAgAAgo/fFayEhAR98803atmyZa29Rnh4uMLDwz33X331Vbndbo0ZM0bl5eU6ePCg2rRpo9jY2FrLAAAAgpffFayrr75aY8aM0YIFC5SQkKCwsDCvx3Nycoy%2B3tGjRzV//nxlZ2crNDRUu3fvlsPh4BOLAADgovldwdq3b5/at28vST657tWSJUsUFxenHj16SJIKCwsVHR2tsWPHauPGjfrVr36lUaNGqWvXrjXeZlFRUbXsTmek4uLijGYPCfG7q2wEFafTv76/Z99vO77vdp3drnNL9p2duYNnbr8oWFOmTNHIkSMVGRmpRYsW%2Bex13W63li5dqvvvv9%2BzVlhYqNOnT%2BvGG2/UsGHD9Mknn%2Bihhx5SXl6e2rRpU6Pt5uXlVfuzPiNGjFBmZqbR/KhdDRpEWR3hnGJiIqyOYBm7zm7XuSX7zs7cgc/hdrvdVodISkrS2rVrvT4tOGzYMGVnZxvf6/P/bd%2B%2BXf3799cXX3zhOYm9qqpKJ06c8Dqpffjw4YqNjdXkyZNrtF1f7sFK%2B/1qo9vE//lkTMr5n%2BRDISF1FBMToePHS1VZWWV1HJ%2By6%2Bx2nVuy7%2BzMbX5uq35Z9os9WOfqeJs2bVJZWVmtvu6aNWvUoUMHrzJVp06dap8YTExMVH5%2Bfo23GxcXV61MuVwnVFFhnx%2BWYOCv71dlZZXfZqttdp3drnNL9p2duQNf8BzsvAjbt29Xu3btvNbGjx9f7RpZu3fvVmJioi%2BjAQCAAGbrgrV3795ql4NIS0vThx9%2BqOXLl2v//v3Kzc3V5s2bNXDgQItSAgCAQOMXhwiln66i7mvFxcWKiYnxWrvlllv01FNPac6cOfr%2B%2B%2B911VVXacGCBWrWrJnP8wEAgMDkNwUrOzvb65pXZ86c0dSpUxUV5X1ymsnrYG3fvv2c6/369VO/fv2MvQ4AALAXvyhY119/fbVP3SUnJ%2BvIkSM6cuSIRakAAAAujl8ULF9e%2BwoAAKC22fokdwAAgNpAwQIAADCMggUAAGAYBQsAAMAwChYAAIBhFCwAAADDKFgAAACGUbAAAAAMo2ABAAAYRsECAAAwjIIFAABgGAULAADAMAoWAACAYRQsAAAAwyhYAAAAhlGwAAAADKNgAQAAGEbBAgAAMIyCBQAAYBgFCwAAwDAKFgAAgGEULAAAAMMoWAAAAIZRsAAAAAyjYAEAABhGwQIAADCMggUAAGAYBQsAAMAwChYAAIBhti1Yn3zyiVq3bu11y8zMlCTt3LlT/fr1U9u2bdW3b1/t2LHD4rQAACCQ2LZg5efnKzU1VWvXrvXcsrOzderUKQ0bNkwdOnTQsmXLlJycrAcffFCnTp2yOjIAAAgQti1YBQUFatWqlWJjYz23mJgYrVy5UmFhYRo7dqxatGihSZMmKSoqSn/%2B85%2BtjgwAAAKErQtWQkJCtfVt27apffv2cjgckiSHw6F27dpp69atPk4IAAAClS0Lltvt1r59%2B7R27Vp1795d6enpmjZtmsrLy%2BVyuRQXF%2Bf1/EaNGunQoUMWpQUAAIHGaXUAK3z//fcqLS1VaGiopk%2BfroMHDyo7O1unT5/2rP9/oaGhKi8vr/H2i4qK5HK5vNaczshqxe1ShYTYsh/7jNPpX9/fs%2B%2B3Hd93u85u17kl%2B87O3MEzty0LVnx8vDZs2KB69erJ4XAoKSlJVVVVeuyxx9SxY8dqZaq8vFzh4eE13n5eXp5yc3O91kaMGOH5lCICQ4MGUVZHOKeYmAirI1jGrrPbdW7JvrMzd%2BCzZcGSpPr163vdb9GihcrKyhQbG6vi4mKvx4qLiy9o71NGRobS0tK81pzOSB05cvLiA59DMDV9f2T6/bpUISF1FBMToePHS1VZWWV1HJ%2By6%2Bx2nVuy7%2BzMbX5uq35ZtmXBWrNmjcaMGaO//vWvioj4qS3v2rVL9evXV/v27TV//ny53W45HA653W5t2bJFw4cPr/H24%2BLiqhUyl%2BuEKirs88MSDPz1/aqsrPLbbLXNrrPbdW7JvrMzd%2BCz5S6Q5ORkhYWF6fHHH1dhYaFWr16tKVOm6P7771ePHj10/PhxPffcc8rPz9dzzz2n0tJS3XrrrVbHBgAAAcKWBSs6OloLFy7Ujz/%2BqL59%2B2rSpEnKyMjQ/fffr%2BjoaL366qvavHmz%2BvTpo23btmnevHmKjIy0OjYAAAgQtjxEKElXXXWV/vCHP5zzsWuvvVbvvfeejxMBAIBgYcs9WAAAALWJggUAAGAYBQsAAMAwChYAAIBhFCwAAADDKFgAAACGUbAAAAAMo2ABAAAYRsECAAAwjIIFAABgGAULAADAMAoWAACAYRQsAAAAwyhYAAAAhlGwAAAADKNgAQAAGEbBAgAAMIyCBQAAYBgFCwAAwDAKFgAAgGEULAAAAMMoWAAAAIZRsAAAAAyjYAEAABhGwQIAADCMggUAAGAYBQsAAMAwChYAAIBhFCwAAADDKFgAAACGUbAAAAAMo2ABAAAYZsuCdfjwYWVmZqpjx45KSUlRTk6OysrKJEnZ2dlq3bq1123x4sUWJwYAAIHEaXUAX3O73crMzFRMTIzefPNNHTt2TBMnTlSdOnU0btw4FRQUKCsrS7179/Z8TXR0tIWJAQBAoLFdwSosLNTWrVv1t7/9TZdffrkkKTMzU7///e89Beu%2B%2B%2B5TbGysxUlhtVun/83qCBfkT490sToCAOBfbHeIMDY2VgsWLPCUq7NKSkpUUlKiw4cPKyEhwZpwAAAgKNhuD1ZMTIxSUlI896uqqrR48WJ17txZBQUFcjgcmjt3rj7//HPVr19f9957r9fhwpooKiqSy%2BXyWnM6IxUXF2dkhrNCQmzXj/FvOJ2B8%2B/h5mlrrI5wQT4Zk3L%2BJ9X/60AKAAAMlklEQVSCsz/jdvxZt%2BvszB08c9uuYP3c1KlTtXPnTr3zzjv6%2B9//LofDocTERA0cOFCbNm3SE088oejoaN1888013mZeXp5yc3O91kaMGKHMzEzT8QGPBg2irI4QtKz%2B3sbERFj6%2Blay6%2BzMHfhsXbCmTp2q119/XS%2B//LJatWqlq666Sqmpqapfv74k6eqrr9a3336rJUuWXFDBysjIUFpamtea0xmpI0dOGs0fTE0fl870vy/8H6u%2BtyEhdRQTE6Hjx0tVWVllSQar2HV25jY/t1W/INm2YE2ePFlLlizR1KlT1b17d0mSw%2BHwlKuzEhMTtX79%2BgvadlxcXLXDgS7XCVVU2OeHBb7Hv6/aY/X3trKyyvIMVrHr7Mwd%2BGy5CyQ3N1dvv/22XnrpJd12222e9RkzZuiee%2B7xeu7u3buVmJjo44QAACCQ2a5gFRQUaPbs2XrggQfUvn17uVwuzy01NVWbNm3SwoUL9d133%2Bmtt97S8uXLNXToUKtjAwCAAGK7Q4SffvqpKisrNWfOHM2ZM8frsT179mjGjBmaOXOmZsyYofj4eL344otKTk62KC0AAAhEtitYw4YN07Bhw37x8fT0dKWnp/swEQAACDa2O0QIAABQ2yhYAAAAhlGwAAAADKNgAQAAGEbBAgAAMIyCBQAAYBgFCwAAwDAKFgAAgGEULAAAAMNsdyV3ALhQt07/m9URLsifHulidQTA9tiDBQAAYBgFCwAAwDAKFgAAgGEULAAAAMMoWAAAAIZRsAAAAAyjYAEAABhGwQIAADCMggUAAGAYBQsAAMAwChYAAIBhFCwAAADDKFgAAACGOa0OAACwr1un/83qCBfkT490sToCAgR7sAAAAAyjYAEAABhGwQIAADCMggUAAGAYJ7kDAFBDnJSPmmIPFgAAgGEULAAAAMMoWAAAAIZxDtY5lJWV6ZlnntH//M//KDw8XEOHDtXQoUOtjgUAwAUJpHPGvnyuh9URjKJgncOUKVO0Y8cOvf766/r%2B%2B%2B81btw4NW3aVD16BNebDwAAagcF62dOnTqlpUuXav78%2Bbrmmmt0zTXXaO/evXrzzTcpWAAAoEYoWD%2Bze/duVVRUKDk52bPWvn17zZ07V1VVVapTh9PW4J8C6VAAAAQ7CtbPuFwuNWjQQKGhoZ61yy%2B/XGVlZTp69KgaNmx43m0UFRXJ5XJ5rTmdkYqLizOaNSSEsgegOqeT/21AYAqm/65RsH6mtLTUq1xJ8twvLy%2Bv0Tby8vKUm5vrtTZy5EiNGjXKTMh/KSoq0pBf7VVGRobx8ubPioqKlJeXx9w2YtfZ7TD3L53YbIfZz8XOc7/yyitBNXfwVEVDwsLCqhWps/fDw8NrtI2MjAwtW7bM65aRkWE8q8vlUm5ubrW9ZcGOue01t2Tf2e06t2Tf2Zk7eOZmD9bPNG7cWEeOHFFFRYWczp%2B%2BPS6XS%2BHh4YqJianRNuLi4oKmgQMAgAvHHqyfSUpKktPp1NatWz1rmzdvVps2bTjBHQAA1AiN4WciIiJ011136emnn9b27du1atUq/fd//7cGDx5sdTQAABAgQp5%2B%2BumnrQ7hbzp37qydO3fqxRdf1Lp16zR8%2BHD17dvX6ljnFBUVpY4dOyoqKsrqKD7F3PaaW7Lv7HadW7Lv7MwdHHM73G632%2BoQAAAAwYRDhAAAAIZRsAAAAAyjYAEAABhGwQIAADCMggUAAGAYBQsAAMAwChYAAIBhFCwAAADDKFgBrry8XL169dKGDRusjuIThw8fVmZmpjp27KiUlBTl5OSorKzM6li1bv/%2B/brvvvuUnJysbt26acGCBVZH8rlhw4Zp/PjxVsfwmU8%2B%2BUStW7f2umVmZlodq9aVl5frmWee0fXXX6//%2BI//0EsvvSQ7XA972bJl1d7v1q1b6%2Bqrr7Y6Wq374Ycf9OCDD6pdu3ZKS0vTa6%2B9ZnUkI5xWB8DFKysrU1ZWlvbu3Wt1FJ9wu93KzMxUTEyM3nzzTR07dkwTJ05UnTp1NG7cOKvj1ZqqqioNGzZMbdq00Xvvvaf9%2B/dr9OjRaty4sW6//Xar4/nERx99pNWrV6t3795WR/GZ/Px8paamavLkyZ61sLAwCxP5RnZ2tjZs2KCFCxfq5MmTevTRR9W0aVPdfffdVkerVT179lRKSornfkVFhYYMGaJu3bpZF8pHHnnkETVt2lTLli1Tfn6%2BxowZo/j4eN18881WR7sk7MEKUPn5%2Bfqv//ovfffdd1ZH8ZnCwkJt3bpVOTk5uuqqq9ShQwdlZmZqxYoVVkerVcXFxUpKStLTTz%2BthIQEde3aVTfccIM2b95sdTSfOHr0qKZMmaI2bdpYHcWnCgoK1KpVK8XGxnpuMTExVseqVUePHtW7776ryZMn69prr9UNN9ygoUOHatu2bVZHq3Xh4eFe7/UHH3wgt9utMWPGWB2tVh07dkxbt27VQw89pISEBKWnpyslJUXr1q2zOtolo2AFqI0bN6pTp07Ky8uzOorPxMbGasGCBbr88su91ktKSixK5BtxcXGaPn26oqOj5Xa7tXnzZm3atEkdO3a0OppP/P73v9edd96pli1bWh3FpwoKCpSQkGB1DJ/avHmzoqOjvf5tDxs2TDk5ORam8r2jR49q/vz5ysrKUmhoqNVxalV4eLgiIiK0bNkynTlzRoWFhdqyZYuSkpKsjnbJKFgBasCAAZo4caIiIiKsjuIzMTExXrvQq6qqtHjxYnXu3NnCVL6VlpamAQMGKDk5Wd27d7c6Tq1bt26dvvzySz388MNWR/Ept9utffv2ae3aterevbvS09M1bdo0lZeXWx2tVh04cEDx8fFavny5evTood/%2B9reaNWuWqqqqrI7mU0uWLFFcXJx69OhhdZRaFxYWpieffFJ5eXlq27atbr31Vt10003q16%2Bf1dEuGQULAWvq1KnauXOnHn30Uauj%2BMzMmTM1d%2B5c7dq1K%2Bh/qy8rK9NTTz2lJ598UuHh4VbH8anvv/9epaWlCg0N1fTp0zVu3Dh9%2BOGHmjJlitXRatWpU6e0f/9%2Bvf3228rJydG4ceO0aNGioDnpuSbcbreWLl2qgQMHWh3FZwoKCpSamqq8vDzl5OToz3/%2Bsz744AOrY10yTnJHQJo6dapef/11vfzyy2rVqpXVcXzm7HlIZWVlGjNmjMaOHRu0hxByc3P1m9/8xmuvpV3Ex8drw4YNqlevnhwOh5KSklRVVaXHHntMEyZMUEhIiNURa4XT6VRJSYlefPFFxcfHS/qpbC5ZskRDhw61OJ1vfP311zp8%2BLBuu%2B02q6P4xLp16/TOO%2B9o9erVCg8PV5s2bXT48GHNmTNHd9xxh9XxLgkFCwFn8uTJWrJkiaZOnWqLw2TFxcXaunWr0tPTPWstW7bUmTNnVFJSooYNG1qYrvZ89NFHKi4uVnJysiR5Do99/PHH%2Buqrr6yM5hP169f3ut%2BiRQuVlZXp2LFjQfuex8bGKiwszFOuJOnKK6/UDz/8YGEq31qzZo06dOigevXqWR3FJ3bs2KHmzZt77aX%2B9a9/rblz51qYygwOESKg5Obm6u2339ZLL71km9/wDh48qJEjR%2Brw4cOetR07dqhhw4ZB%2Bx9aSVq0aJE%2B/PBDLV%2B%2BXMuXL1daWprS0tK0fPlyq6PVujVr1qhTp04qLS31rO3atUv169cP6ve8bdu2Kisr0759%2BzxrhYWFXoUr2G3fvl3t2rWzOobPxMXFaf/%2B/V7nFxYWFqpZs2YWpjKDgoWAUVBQoNmzZ%2BuBBx5Q%2B/bt5XK5PLdg1qZNG11zzTWaOHGi8vPztXr1ak2dOlXDhw%2B3Olqtio%2BPV/PmzT23qKgoRUVFqXnz5lZHq3XJyckKCwvT448/rsLCQq1evVpTpkzR/fffb3W0WpWYmKhu3bppwoQJ2r17t9asWaN58%2Bapf//%2BVkfzmb1799rqE7NpaWmqW7euHn/8ce3bt09/%2BctfNHfuXA0aNMjqaJeMQ4QIGJ9%2B%2BqkqKys1Z84czZkzx%2BuxPXv2WJSq9oWEhGj27NmaPHmyMjIyFBERoUGDBmnw4MFWR0MtiY6O1sKFC/X888%2Brb9%2B%2BioqK0t133x30BUuSpk2bpsmTJ6t///6KiIjQ7373u6D4j21NFRcXB/31zv6/yy67TK%2B99pqee%2B45/ed//qcaNmyohx56SBkZGVZHu2QOtx3%2BBgEAAIAPcYgQAADAMAoWAACAYRQsAAAAwyhYAAAAhlGwAAAADKNgAQAAGEbBAgAAMIyCBQAAYBgFCwAAwDAKFgAAgGEULAAAAMMoWAAAAIZRsAAAAAz7X77TqYv6%2BZ9nAAAAAElFTkSuQmCC"/>
+        </div>
+        <div role="tabpanel" class="tab-pane col-md-12" id="common-6523711269026865723">
+            
+<table class="freq table table-hover">
+    <thead>
+    <tr>
+        <td class="fillremaining">Value</td>
+        <td class="number">Count</td>
+        <td class="number">Frequency (%)</td>
+        <td style="min-width:200px">&nbsp;</td>
+    </tr>
+    </thead>
+    <tr class="">
+        <td class="fillremaining">1.0</td>
+        <td class="number">160</td>
+        <td class="number">40.4%</td>
+        <td>
+            <div class="bar" style="width:100%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">2.0</td>
+        <td class="number">135</td>
+        <td class="number">34.1%</td>
+        <td>
+            <div class="bar" style="width:84%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">4.0</td>
+        <td class="number">26</td>
+        <td class="number">6.6%</td>
+        <td>
+            <div class="bar" style="width:17%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">3.0</td>
+        <td class="number">25</td>
+        <td class="number">6.3%</td>
+        <td>
+            <div class="bar" style="width:16%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">5.0</td>
+        <td class="number">15</td>
+        <td class="number">3.8%</td>
+        <td>
+            <div class="bar" style="width:10%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">1.5</td>
+        <td class="number">14</td>
+        <td class="number">3.5%</td>
+        <td>
+            <div class="bar" style="width:9%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">6.0</td>
+        <td class="number">8</td>
+        <td class="number">2.0%</td>
+        <td>
+            <div class="bar" style="width:5%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">7.0</td>
+        <td class="number">5</td>
+        <td class="number">1.3%</td>
+        <td>
+            <div class="bar" style="width:4%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">8.0</td>
+        <td class="number">3</td>
+        <td class="number">0.8%</td>
+        <td>
+            <div class="bar" style="width:2%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">2.5</td>
+        <td class="number">2</td>
+        <td class="number">0.5%</td>
+        <td>
+            <div class="bar" style="width:2%">&nbsp;</div>
+        </td>
+</tr><tr class="other">
+        <td class="fillremaining">Other values (3)</td>
+        <td class="number">3</td>
+        <td class="number">0.8%</td>
+        <td>
+            <div class="bar" style="width:2%">&nbsp;</div>
+        </td>
+</tr>
+</table>
+        </div>
+        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme-6523711269026865723">
+            <p class="h4">Minimum 5 values</p>
+            
+<table class="freq table table-hover">
+    <thead>
+    <tr>
+        <td class="fillremaining">Value</td>
+        <td class="number">Count</td>
+        <td class="number">Frequency (%)</td>
+        <td style="min-width:200px">&nbsp;</td>
+    </tr>
+    </thead>
+    <tr class="">
+        <td class="fillremaining">1.0</td>
+        <td class="number">160</td>
+        <td class="number">40.4%</td>
+        <td>
+            <div class="bar" style="width:100%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">1.2</td>
+        <td class="number">1</td>
+        <td class="number">0.3%</td>
+        <td>
+            <div class="bar" style="width:1%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">1.5</td>
+        <td class="number">14</td>
+        <td class="number">3.5%</td>
+        <td>
+            <div class="bar" style="width:9%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">2.0</td>
+        <td class="number">135</td>
+        <td class="number">34.1%</td>
+        <td>
+            <div class="bar" style="width:84%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">2.5</td>
+        <td class="number">2</td>
+        <td class="number">0.5%</td>
+        <td>
+            <div class="bar" style="width:2%">&nbsp;</div>
+        </td>
+</tr>
+</table>
+            <p class="h4">Maximum 5 values</p>
+            
+<table class="freq table table-hover">
+    <thead>
+    <tr>
+        <td class="fillremaining">Value</td>
+        <td class="number">Count</td>
+        <td class="number">Frequency (%)</td>
+        <td style="min-width:200px">&nbsp;</td>
+    </tr>
+    </thead>
+    <tr class="">
+        <td class="fillremaining">4.5</td>
+        <td class="number">1</td>
+        <td class="number">0.3%</td>
+        <td>
+            <div class="bar" style="width:7%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">5.0</td>
+        <td class="number">15</td>
+        <td class="number">3.8%</td>
+        <td>
+            <div class="bar" style="width:100%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">6.0</td>
+        <td class="number">8</td>
+        <td class="number">2.0%</td>
+        <td>
+            <div class="bar" style="width:53%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">7.0</td>
+        <td class="number">5</td>
+        <td class="number">1.3%</td>
+        <td>
+            <div class="bar" style="width:34%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">8.0</td>
+        <td class="number">3</td>
+        <td class="number">0.8%</td>
+        <td>
+            <div class="bar" style="width:20%">&nbsp;</div>
+        </td>
+</tr>
+</table>
+        </div>
+    </div>
+</div>
+</div>
+    <div class="row headerrow highlight">
+        <h1>Correlations</h1>
+    </div>
+    <div class="row variablerow">
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAApEAAAJFCAYAAACFhKzyAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAPYQAAD2EBqD%2BnaQAAADl0RVh0U29mdHdhcmUAbWF0cGxvdGxpYiB2ZXJzaW9uIDIuMi4yLCBodHRwOi8vbWF0cGxvdGxpYi5vcmcvhp/UCwAAIABJREFUeJzs3Xt8z/X///H7DmxmY9iGoRyKaZjZQplDWkmfj0IiMuRYnzZ9HMPqg0oK1UfWUfEhylJS4ZO%2B0%2BGTPtk0TA7zYw6N2OYwxsw2e//%2B0F4fb9vY22tr0%2Bt2vVzeF3u/Ds/34/3UpT3cn6/X%2B%2B1ks9lsAgAAABzgXNEFAAAA4MZDEwkAAACH0UQCAADAYTSRAAAAcBhNJAAAABxGEwkAAACH0UQCAADAYTSRAAAAcBhNJAAAABzmWtEFALC2w4cP6%2B677y5xf5UqVeTp6anGjRurW7duGjx4sDw9Pf/ACgEAxXHiaw8BVKTLm8jmzZsXaRDz8vJ08uRJHTlyRJLk7%2B%2Bvf/3rX7r55pv/8FoBAP9DEwmgQl3eRC5dulQdOnQo9rj4%2BHj97W9/09mzZxUcHKwVK1b8kWUCAK7ANZEAbggdOnTQ%2BPHjJUlbt27Vjh07KrgiALA2mkgAN4x77rnH%2BDkpKakCKwEAcGMNgBuGl5eX8fO5c%2Bfs9m3evFkffPCBtmzZoszMTNWoUUNt27ZVRESE7rjjjmLHO3PmjFasWKHvv/9e%2B/bt09mzZ1WtWjXddNNNuuuuuzRkyBDVrFnT7pwWLVpIkn788Ue99NJL2rBhg5ydnRUYGKhFixbJ1dVVSUlJWrx4sRITE3Xy5El5eHioSZMmCg8P16BBg4q9MSgnJ0crVqzQunXrtG/fPuXl5alu3bq68847NXz4cDVu3Nju%2BPj4eA0ZMkRBQUFavny5PvjgA61evVqHDh1SlSpVdNttt2nIkCEKDw%2B/nqkGgGuiiQRwwzh06JDxc7169Yyf582bp4ULF0qSatasqebNmys9PV0bNmzQhg0bNGrUKE2cONFurIMHD2rYsGE6evSoXF1dddNNN6lBgwY6cuSIdu7cqZ07d2rt2rX69NNPVb169SK1REVFaevWrWrevLlOnjwpX19fubq66uuvv9a4ceOUn5%2BvWrVqqUWLFjp37py2b9%2BupKQkffHFF1qxYoVdI3ns2DE99thj2r9/vySpcePGql69ulJSUhQbG6vVq1frpZde0v3331%2Bkjry8PI0aNUo//fSTatWqpWbNmunAgQOKj49XfHy8ZsyYoYEDB5qbeAAojg0AKlBqaqqtefPmtubNm9s2bdp01WMnT55sa968uS0wMNCWkZFhs9lsto8%2B%2BsjWvHlzW2hoqO3zzz83ji0oKLCtXbvW1rZtW1vz5s1tH3/8sd1YgwcPtjVv3tzWv39/W1pamt15n332mS0gIMDWvHlz27Jly%2BzOK6y1VatWtoSEBJvNZrNdvHjRdurUKdvFixdtnTp1sjVv3ty2cOFCW35%2BvnHejh07bB07drQ1b97c9s477xjb8/PzbQ8%2B%2BKCtefPmth49eth2795t7MvKyrJFR0cb73nbtm3Gvk2bNhm1tG3b1vbFF18Y%2B86cOWMbOnSorXnz5rb27dvb8vLyrjqvAHA9uCYSQKWWk5OjXbt2afr06Vq9erUkadiwYfLx8VFubq4WLFggSXrxxRf1wAMPGOc5OTnp/vvv16RJkyRJCxYsUH5%2BviTp%2BPHj2rt3ryTp%2Beefl5%2Bfn915vXv3Vvv27SVJe/bsKbaunj176vbbb5ckOTs7y9vbWydPnlRGRoYkqX///nJxcTGODwwM1Lhx4xQeHi5vb29j%2B1dffaXdu3fLzc1NCxcuVEBAgLHP09NTL7zwgjp37qy8vDy99tprxdYyduxY9erVy3ju5eVlvO/MzEwdOHCghNkFgOvHcjaASmPIkCHXPObhhx/WU089JenSXdrHjx9X9erVS/zA8gceeEDPP/%2B80tLStGvXLrVp00Y%2BPj7atGmTcnJy5O7uXuScixcvGsvNOTk5xY4bEhJSZFutWrVUs2ZNnT59WhMnTtQTTzyhoKAgOTtf%2Bvd6//791b9/f7tzvvnmG0lS9%2B7d1ahRo2Jf67HHHtMPP/yghIQEZWVl2V0bKkl33XVXkXOaNWtm/HzmzJlixwUAM2giAVQaV37YuJOTk9zc3OTt7a0WLVooPDxct9xyi7G/ME3My8vTo48%2BWuK4Li4uKigo0P79%2B9WmTRtju7u7u44cOaJffvlFv/76q1JTU5WSkqLdu3crOztbklRQUFDsmL6%2BvsW%2BzsSJE/Xss8/q%2B%2B%2B/1/fff6%2BaNWuqQ4cO6tSpk7p162Z3LackIyUMDAwssf7CfRcvXtShQ4fUqlUru/1169Ytcs7lzfHFixdLHBsArhdNJIBK45lnninxw8aLk5WVJUnKzc3Vli1brnn85Ync/v37NX36dCUkJNgd4%2BnpqdDQUKWnpys5ObnEsYpLMKVLaePNN9%2BsxYsX67///a9Onz6tr7/%2BWl9//bWcnJzUtWtXzZw502gmz549K0lF0sUrayp05V3p0qWvhrwaG98pAaAc0EQCuGFVq1ZN0qWkbtWqVaU%2B78SJExo8eLBOnDghf39/9e/fX7fddpuaNm2qhg0bysnJSRMmTLhqE3k1HTp0UIcOHZSTk6Off/5Zmzdv1g8//KCdO3fqu%2B%2B%2B05gxY7R69Wo5OTkZd34XNsTFubz5Le5OcQCoCDSRAG5YTZo0kXTp43ry8/Pl6lr0f2k2m03x8fGqV6%2Be/P39VbVqVX366ac6ceKEvL299emnn6p27dpFzktLS3O4ntzcXKWmpurs2bMKCgqSu7u7wsLCFBYWpnHjxmnt2rUaP368kpOTtWfPHgUEBKhp06batWuXdu7cWeK4v/zyi6RLy/s33XSTw3UBQHng7mwAN6zbb79dXl5eOnfuXIlJ5JdffqmhQ4eqZ8%2BeOnbsmKRL39ctSf7%2B/sU2kPv27dO2bdskOXY94X/%2B8x/df//9Gj16tHJzc4vsv/POO42fC8ctvCnmm2%2B%2BUWpqarHjLl26VJLUtm1b1ahRo9T1AEB5ookEcMPy8PDQ6NGjJUmzZs3Sp59%2BancjTFxcnKZPny7p0kfyFKZ4TZs2lSQlJydr/fr1xvE2m03/%2Bc9/NHLkSOXl5UmSzp8/X%2Bp6unTpolq1aikzM1NPP/20MjMzjX1nz57Vyy%2B/LEmqX7%2B%2Bbr31VknSfffdpxYtWujChQsaNWqU3RL62bNn9eyzz2rjxo1ydXUt8oHpAFCRWM4GcEMbNWqUUlNT9fHHH2vatGmaO3euGjZsqLS0NKWnp0u69HE8s2bNMs7p16%2BfPvzwQx06dEhjx45VgwYNVKtWLR09elQnTpxQlSpV1L59eyUkJDi0rF21alXNnz9fI0aM0Lp167RhwwbddNNNcnZ2VmpqqrKzs1WtWjW99NJLqlq1qiTJ1dVVb775pkaNGqX9%2B/frwQcftPvGmsKPIZo5c6ZCQ0PLdvIAwASaSAA3NCcnJz3//PPq0aOHVqxYoW3bthkf3t22bVv99a9/1YABA4ymTbp0t/Mnn3yihQsX6ttvv9Xhw4d1/Phx1atXT926ddPQoUPl4eGh8PBwJScn67fffpO/v3%2Bp6unQoYNWrlxpfHf2wYMH5erqqnr16iksLEzDhw8vMlbDhg316aef6qOPPtJXX32llJQUHTt2TPXr11fnzp316KOPFvnubACoaE42PvsBAAAADuKaSAAAADiMJhIAAAAOo4kEAACoZHJzc/XXv/5V8fHxJR6za9cuPfzwwwoKCtJDDz2kHTt22O1fs2aNwsPDFRQUpCeffFInT54s0xppIgEAACqRCxcuaPz48dq7d2%2BJx2RnZ2v06NEKDQ3VqlWrFBwcrDFjxig7O1uStH37dkVHRysyMlKxsbE6c%2BaMpk6dWqZ10kQCAABUEvv27VP//v3166%2B/XvW4devWyc3NTZMnT1azZs0UHR2t6tWr66uvvpIkLVu2TD179lTv3r0VEBCgOXPm6Pvvvy/xSw2uB00kAABAJZGQkKAOHTooNjb2qsclJSUpJCRETk5Oki593Fm7du2Mb9tKSkqy%2B2zZ%2BvXry9/fX0lJSWVWK58TCQAAUEbS09OVkZFht83X11d%2Bfn6lOn/QoEGlOi4jI0O33HKL3bY6deoYS%2BDp6elFXrNOnTrG17%2BWBZpIq/j9XyqoxJo0kfbulW69VTpwoKKrwdXExVV0Bbgad3fpzjul//5Xysmp6GpwLXffXTGvW06/F2Nff10xMTF22yIjIxUVFVWmr3P%2B/Hm7L1GQLn1rVm5uriQpJyfnqvvLAk0kUFl4e0suLpf%2BBHD9qlS51CBUqUITiT/cgAED1L17d7ttvr6%2BZf46bm5uRRrC3Nxcubu7X3V/tWrVyqwGmkgAAGA9zuVzW4ifn1%2Bpl67NqFu3ro4fP2637fjx48Zrl7S/LBtabqwBAADW4%2BxcPo8/SFBQkLZu3arCb6%2B22WzasmWLgoKCjP2JiYnG8UePHtXRo0eN/WWBJhIAAOAGkJGRoZzfL9G47777dObMGc2aNUv79u3TrFmzdP78efXs2VOSNHDgQH3%2B%2BedauXKlkpOTNXnyZHXr1k2NGjUqs3poIgEAgPXcgElkWFiY1q1bJ0ny9PTUO%2B%2B8o8TERPXt21dJSUl699135eHhIUkKDg7Wc889pzfeeEMDBw5UzZo1NXv27DKtx8lWmIPiz427syu/4GBpyxapXTtp69aKrgZXw93ZlZuXl9S%2BvZSQIGVlVXQ1uJaKujvbza18xr1woXzGrYS4sQYAAFjPH3j94p8VTSQAALAemkjTmEEAAAA4jCQSAABYD0mkacwgAAAAHEYSCQAArIck0jSaSAAAYD00kaYxgwAAAHAYSSQAALAekkjTmEEAAAA4jCQSAABYD0mkaTSRAADAemgiTWMGAQAA4DCSSAAAYD0kkaYxgwAAAHAYSSQAALAekkjTaCIBAID10ESaxgwCAADAYSSRAADAekgiTWMGAQAA4DCSSAAAYD0kkabRRAIAAOuhiTSNGQQAAIDDSCIBAID1kESaxgwCAADAYSSRAADAekgiTaOJBAAA1kMTaRozCAAAAIeRRAIAAOshiTSNGQQAAIDDSCIBAID1kESaRhMJAACshybSNGYQAAAADiOJBAAA1kMSaRozCAAAAIeRRAIAAOshiTSNJhIAAFgPTaRpzCAAAAAcRhIJAACshyTSNJpIAABgPTSRpjGDAAAAcBhJJAAAsJ5KmkReuHBBM2fO1Ndffy13d3cNHz5cw4cPL3JcRESEEhISimzv27evZs%2BerdOnT6t9%2B/Z2%2B7y9vRUfH19mtdJEAgAAVBJz5szRjh07tGTJEv322296%2Bumn5e/vr/vuu8/uuAULFigvL894npSUpL///e8aNGiQJGnfvn3y9vbWmjVrjGOcy7hxpokEAADWUwmTyOzsbK1cuVILFy5UYGCgAgMDtXfvXi1fvrxIE%2Bnt7W38fPHiRb322msaOXKkWrduLUnav3%2B/mjRpIl9f33Krt/LNIAAAQHlzdi6fhwnJycnKz89XcHCwsS0kJERJSUkqKCgo8bxVq1bp9OnTGjVqlLFt3759aty4sal6roUkEgAAoIykp6crIyPDbpuvr6/8/PyueW5GRoZq1aqlqlWrGtt8fHx04cIFZWZmqnbt2kXOsdlseu%2B99zRkyBBVr17d2J6SkqL8/Hz169dPaWlpCg0N1dSpU0tVR2nRRAIAAOspp%2BXs2NhYxcTE2G2LjIxUVFTUNc89f/68XQMpyXiem5tb7Dnx8fE6duyY%2Bvfvb7d9//79ql27tqZOnSqbzabXXntNjz/%2BuFauXCkXFxdH3lKJaCIBAADKyIABA9S9e3e7baW9LtHNza1Is1j43N3dvdhz1q9fry5duthdIylJa9eulZOTk3He66%2B/rrCwMCUlJaldu3alqudaaCIBAID1lFMS6efnd91LxnXr1tWpU6eUn58vV9dLLVpGRobc3d1Vo0aNYs/54YcfFBkZWWR7tWrV7J7XqVNH3t7eSktLu67aisONNQAAwHoq4Y01LVu2lKurq7Zt22ZsS0xMVOvWrYv9eJ6TJ08qNTVVISEhdtvPnj2r22%2B/XZs2bTK2paWl6dSpU2ratKmpGi9HEwkAAFAJVKtWTb1799aMGTO0fft2xcXFadGiRRoyZIikS6lkTk6OcfzevXvl5uamhg0b2o3j6empkJAQzZ49W9u3b9fOnTs1btw4de7cWS1atCizemkiAQCA9VTCJFKSpk6dqsDAQA0dOlQzZ85UVFSU7r33XklSWFiY1q1bZxx74sQJ1ahRQ05OTkXGefnll3Xbbbdp9OjRioiIUIMGDTRv3jzT9V3OyWaz2cp0RFROxfwHhkomOFjaskVq107aurWiq8HVxMVVdAW4Gi8vqX17KSFBysqq6GpwLXffXTGv26NH%2BYy7fn35jFsJcWMNAACwnkr4jTU3GppIAABgPTSRpjGDAAAAcBhJJAAAsB6SSNOYQQAAADiMJBIAAFgPSaRpNJEAAMB6aCJNYwYBAADgMJJIAABgPSSRpjGDAAAAcBhJJAAAsB6SSNNoIgEAgPXQRJrGDAIAAMBhJJEAAMB6SCJNYwYBAADgMJJIAABgPSSRptFEAgAA66GJNI0ZBAAAgMNIIgEAgPWQRJrGDAIAAMBhJJEAAMB6SCJNo4kEAADWQxNpGjMIAAAAh5FEAgAA6yGJNI0ZBAAAgMNIIgEAgPWQRJpGEwkAAKyHJtI0ZhAAAAAOI4kEAADWQxJpGk0kAACwHppI05hBAAAAOIwkEgAAWA9JpGnMIAAAABxGEgkAAKyHJNI0mkgAAGA9NJGmMYMAAABwGEkkAACwHpJI05hBAAAAOIwkEgAAWA9JpGk0kQAAwHpoIk1jBgEAAOCwMm8iDx8%2BrBYtWujw4cPF7l%2B1apW6d%2B9uPP/pp5%2BUkpJS7L7SmjBhgv773/9eX8G/W7BggSIiIkyNUdZ%2B/PFHTZgwoaLLAADgz8fZuXweJl24cEHTpk1TaGiowsLCtGjRohKPfeKJJ9SiRQu7x7fffmvs/9e//qXOnTsrODhY06ZN0/nz503Xd7kybyLr16%2BvjRs3qn79%2BqU6ftiwYTp%2B/Ph1v96mTZuUlpamO%2B%2B887rHqKw6deqktLQ0xcfHV3QpAADgDzBnzhzt2LFDS5Ys0fTp0xUTE6Ovvvqq2GNTUlI0d%2B5cbdy40Xh06tRJkrR%2B/XrFxMToueee05IlS5SUlKS5c%2BeWaa1l3kS6uLjI19dXLi4uZT10sd58800NHDjwD3mtijBo0CC9%2BeabFV0GAAB/LpUwiczOztbKlSsVHR2twMBA3XPPPRo5cqSWL19e5Njc3FwdPnxYrVu3lq%2Bvr/GoWrWqJGnp0qUaOnSo7rrrLrVp00YzZ87Up59%2BWqZpZKnf7QMPPKBly5YZzx977DENHjzYeB4bG6uBAwcWWc5OS0vTyJEj1bZtW/Xp00e//vqrcU7h0vWQIUO0YMECSZLNZtOCBQvUoUMHhYaG6uWXXy6xpv3792vLli3q2rWrse3QoUMaMWKEgoOD1a1bNy1dutTYl5KSohEjRqhdu3bq3LmzYmJiVFBQUGTc4pbVIyIijBqnTJmiuXPn6u9//7uCgoJ0//33a9euXXrttdcUGhqqLl266N///rek/y3vf/311woPD1fr1q01ZswYZWZmSpLy8vL0zDPPqEOHDgoODtbjjz%2ButLQ043W7dOmixMRE7d%2B/v8R5AAAADqqETWRycrLy8/MVHBxsbAsJCVFSUlKRfmX//v1ycnJSo0aNioxz8eJF/fLLLwoNDTW2tW3bVnl5eUpOTjZV4%2BVKfXd2WFiYEhISNHjwYOXl5Wnbtm0qKChQXl6eqlSpoh9//FGdO3cuct5TTz0lDw8PrVy5Unv37lV0dLRq1aolSfrkk090xx13aMGCBerUqZPWr1%2Bv3377TQcOHNCKFSu0e/dujR8/XnfccYe6dOlSZOwffvhBbdq0kaenp6RL1xEMHz5cgYGB%2Bvjjj5WamqoJEyaoUaNGCgoK0qBBg9S9e3etXLlSBw4c0DPPPCNPT08NGzbM4YlbsmSJpk2bpnHjxmnq1KkaOnSoevToodjYWH3wwQeaPn26evToYRz/9ttv69VXX5XNZtMTTzyhxYsXa9y4cVq%2BfLk2b96sRYsWyd3dXTNmzNCLL76o%2BfPnS5I8PT3VunVrbdy4UU2bNi1Vbenp6crIyLDb5tukify8vR1%2Bn/gDBQTY/4nKy8uroivA1Xh42P%2BJyisrq6IrKHPF/g729ZWfn981z83IyFCtWrWMNFGSfHx8dOHCBWVmZqp27drG9v3798vT01OTJ09WQkKC6tWrp6ioKHXt2lVnzpzRhQsX7F7T1dVV3t7eOnbsWBm8y9/HLO2BYWFhmjBhgmw2m3bu3KmbbrpJJ0%2Be1K5du9S6dWvFx8dr1KhRdufs3btXW7du1bfffit/f3/deuut2rFjh7G2XzgZNWvWVPXq1SVJVapU0QsvvCAPDw81adJE7777rpKTk4ttInft2qVmzZoZzzdu3KiTJ0/qxRdflKenp2699VY988wzcnZ21po1a1StWjU9//zzcnV1VbNmzZSRkaE33njjuprIVq1aadCgQZKkv/71r3rxxRf1zDPPyN3dXREREfroo4/srvUcO3as2rRpI0nq1auXfvnlF0mXkko3Nzc1aNBA3t7eeumll4yUstAtt9yiXbt2lbq22NhYxcTE2G2LfOopRT31lMPvExXgww8rugLgz6FVq4quANeyYUPFvXY5fcRPsb%2BDIyMVFRV1zXPPnz9v10BKMp7n5ubabd%2B/f79ycnIUFham0aNH6//%2B7//0xBNPKDY2Vj4%2BPnbnXj7WleOYUeomMjQ0VOfPn9fevXu1efNmhYaGKj09XYmJiXJxcZGzs7NatWqlI0eOGOfs27dP3t7e8vf3N7a1bt26xAtEJalOnTryuOxfj15eXiW%2B4ZMnT6ply5bG8wMHDqhJkyZGMilJDz30kCRp%2BvTpCgwMlKvr/95ycHCwMjIydObMmdJOg6Fhw4bGz%2B7u7vLx8ZG7u7skyc3NTZL9X/jNN99s/Ozp6am8vDxJ0oABA7R27VqFhYWpffv2Cg8PV9%2B%2Bfe1ey9vb26H4ecCAAUWW43179ZKWLCn1GKgAAQGXGshBg6QyXG5AOXj77YquAFfj4XGpgdyxQ8rOruhqYDHF/g729S3VuW5ubkV6nsLnhT1Gob/97W%2BKiIhQzZo1JUkBAQHauXOnPv74Y40bN87u3MvHqlatWunfzDWUuomsWrWqQkNDlZCQoJ9//lkPPvig0tPT9fPPP%2BvixYvq1KmTnJycipxns9nsnlepUuWqr1PcDTlXjlHIyclJFy9eNJ5f3iBeqbCxu1zh9QWXj1E47pXy8/Ptnl/5Ws7X%2BBdNSe/71ltv1TfffKPvvvtO3333nV599VWtWbNGy5cvN%2BooKCi45viX8/PzKxqbHzhQ6vNRwZKTpa1bK7oKXM2fcAnuTyk7m78rlKyckshifweXUt26dXXq1Cnl5%2BcbfUZGRobc3d1Vo0YNu2OdnZ2NBrJQ06ZNjQDPzc1Nx48fN1Zs8/PzlZmZWeqGtjQcmsHC6yK3bdumkJAQhYSEaMuWLdq4cWOx10M2b95cp0%2Bf1qFDh4xtu3fvNl/17%2BrUqWO39Nu4cWMdOnTI7s6jl19%2BWS%2B88IKaNGminTt3GgmgJG3dulW1a9eW9xXXClapUkXnzp0znttsthI/99Ks1atX69tvv1XPnj318ssv67333lNiYqJOnDhhHHPq1CkjmgYAAGWgEt5Y07JlS7m6umrbtm3GtsTERLVu3bpImDRlyhRNnTrVbltycrKaNm0qZ2dntW7dWomJica%2Bbdu2ydXVVQFleN29w03kN998I09PT9WtW1e33Xabzp8/r82bNxfbRDZr1kx33HGHpk2bpuTkZMXFxdnd4S1JHh4e2rt3r7Ku41%2BLt912m/bs2WNXn4%2BPj/7xj38oJSVFGzZs0IoVKxQWFqZevXopNzfX2BcXF6cFCxZo4MCBRZLHVq1aKTMzUx988IFSU1M1e/ZsnT592uH6SiMrK0uzZs3STz/9pNTUVH355ZeqV6%2BecfORJO3Zs0e33XZbubw%2BAACoHKpVq6bevXtrxowZ2r59u%2BLi4rRo0SINGTJE0qVUMicnR9KlT7j58ssvtXr1ah06dEgxMTFKTEw0Pjln0KBBev/99xUXF6ft27drxowZ6t%2B/f8UsZ0uXbvCoU6eOQkJCJF1aeg4ODi5yx9DlXnvtNT377LN65JFH5O/vr4iICK1atcrYHxERoTlz5ujXX391uDvu3LmzXn75ZZ07d07Vq1eXq6ur3nzzTT333HPq06ePfHx8NHnyZHXr1k2S9N5772nWrFnq3bu3ateuraFDh2rMmDFFxm3cuLGefvppvfXWW/rnP/%2Bpvn372t1pXZYeffRRHTt2TJMmTdLp06fVqlUrvfXWW8ay/rlz57Rnz55ibywCAADXqZJ%2Bd/bUqVM1Y8YMDR06VJ6enoqKitK9994r6VJYNnv2bPXt21f33nuvpk%2Bfrrfeeku//fabbr31Vr333nvGPRt/%2BctfdOTIEf3jH/9Qbm6u7r33Xk2aNKlMa3WylXTB4Q0iIiJCDz30kHr37l3RpZSLzz77TJ9//rn%2B9a9/mRuomOs8UckEB0tbtkjt2nFNZGUXF1fRFeBqvLyk9u2lhASuibwR3H13xbzu7NnlM%2B4VS8x/ZpWzDXfAmDFjtGLFioouo9zExsZq9OjRFV0GAAB/LpXwmsgbzQ3/bsPCwlSvXj1t3Lixokspcz/88IPq16//p/xecAAAKhRNpGkOXRNZWf3zn/%2Bs6BLKRefOnYu9YQkAAKCi/SmaSAAAAIdYLDUsD8wgAAAAHEYSCQAArIck0jSaSAAAYD00kaYxgwAAAHAYSSQAALAekkjTmEEAAAA4jCQSAABYD0mkaTSRAADAemgiTWMGAQAA4DCSSAAAYD0kkaYxgwAAAHAYSSQAALAekkjTaCIBAID10ESaxgwCAACRKKzgAAAgAElEQVTAYSSRAADAekgiTWMGAQAA4DCSSAAAYD0kkabRRAIAAOuhiTSNGQQAAIDDSCIBAID1kESaRhMJAACshybSNGYQAAAADiOJBAAA1kMSaRozCAAAAIeRRAIAAOshiTSNJhIAAFgPTaRpzCAAAAAcRhIJAACshyTSNGYQAAAADiOJBAAA1kMSaRpNJAAAsB6aSNOYQQAAADiMJBIAAFgPSaRpzCAAAAAcRhIJAACshyTSNJpIAABgPTSRpjGDAAAAcBhNJAAAsB5n5/J5mHThwgVNmzZNoaGhCgsL06JFi0o89rvvvtODDz6o4OBg9erVSxs2bLDbHxoaqhYtWtg9zp07Z7rGQixnAwAAVBJz5szRjh07tGTJEv322296%2Bumn5e/vr/vuu8/uuOTkZEVGRmry5Mnq2rWrNm7cqKeeekqffPKJAgIClJaWpqysLMXFxcnd3d04z8PDo8xqpYkEAADWUwmviczOztbKlSu1cOFCBQYGKjAwUHv37tXy5cuLNJFr1qxRx44dNWTIEEnSzTffrG%2B%2B%2BUb//ve/FRAQoJSUFPn6%2BqpRo0blVi9NJAAAsJ5yaiLT09OVkZFht83X11d%2Bfn7XPDc5OVn5%2BfkKDg42toWEhOjtt99WQUGBnC%2BruU%2BfPsrLyysyRlZWliRp3759atKkyfW%2BjVKhiQQAACgjsbGxiomJsdsWGRmpqKioa56bkZGhWrVqqWrVqsY2Hx8fXbhwQZmZmapdu7axvVmzZnbn7t27Vz/99JMeeeQRSVJKSorOnz%2BviIgIHThwQC1bttS0adPKtLGkiQQAANZTTknkgAED1L17d7ttvr6%2BpTr3/Pnzdg2kJON5bm5uieedPHlSUVFRateune6%2B%2B25J0v79%2B3X69GmNHz9enp6eWrhwoYYNG6a1a9fK09PTkbdUIppIAACAMuLn51eqpeviuLm5FWkWC59ffnPM5Y4fP67HHntMNptNr7/%2BurHk/f777ysvL0/Vq1eXJM2bN09du3bVt99%2Bq169el1XfVeiiQQAANZTCW%2BsqVu3rk6dOqX8/Hy5ul5q0TIyMuTu7q4aNWoUOT4tLc24sWbp0qV2y91Vq1a1SzXd3NzUsGFDpaWllVm9lW8GAQAAylsl/JzIli1bytXVVdu2bTO2JSYmqnXr1nY31UiX7uQeOXKknJ2dtWzZMtWtW9fYZ7PZFB4erlWrVtkdf%2BjQITVt2tRUjZcjiQQAAKgEqlWrpt69e2vGjBl68cUXlZ6erkWLFmn27NmSLqWSXl5ecnd31zvvvKNff/1VH3zwgbFPurTs7eXlpW7dumnBggVq0KCBateurfnz56tevXrq2rVrmdVLEwkAAKynEi5nS9LUqVM1Y8YMDR06VJ6enoqKitK9994rSQoLC9Ps2bPVt29frV%2B/Xjk5OXr44Yftzu/Tp49eeuklTZo0Sa6urpowYYLOnj2rjh076t1335WLi0uZ1epks9lsZTYaKi8np4quANcSHCxt2SK1aydt3VrR1eBq4uIqugJcjZeX1L69lJAg/f6ZeajEfr%2Bb%2BA/300/lM%2B4dd5TPuJUQSSQAALCeSppE3khoIgEAgPXQRJrGDAIAAMBhJJEAAMB6SCJNYwYBAADgMJJIAABgPSSRptFEAgAA66GJNI0ZBAAAgMNIIgEAgPWQRJrGDAIAAMBhJJEAAMB6SCJNo4kEAADWQxNpGjMIAAAAh5FEAgAA6yGJNI0mEgAAWA9NpGnMIAAAABxGEgkAAKyHJNI0ZhAAAAAOI4kEAADWQxJpGk0kAACwHppI05hBAAAAOIwkEgAAWA9JpGnMIAAAABxGEgkAAKyHJNI0mkgAAGA9NJGmMYMAAABwGEkkAACwHpJI05hBAAAAOIwkEgAAWA9JpGk0kQAAwHpoIk1jBgEAAOAwkkgAAGA9JJGmMYMAAABwGEkkAACwHpJI02giAQCA9dBEmsYMAgAAwGEkkQAAwHpIIk1jBgEAAOAwkkgAAGA9JJGm0UQCAADroYk0jRkEAACAw2giAQCA9Tg7l8/DpAsXLmjatGkKDQ1VWFiYFi1aVOKxu3bt0sMPP6ygoCA99NBD2rFjh93%2BNWvWKDw8XEFBQXryySd18uRJ0/VdjiYSAACgkpgzZ4527NihJUuWaPr06YqJidFXX31V5Ljs7GyNHj1aoaGhWrVqlYKDgzVmzBhlZ2dLkrZv367o6GhFRkYqNjZWZ86c0dSpU8u0VppIAABgPZUwiczOztbKlSsVHR2twMBA3XPPPRo5cqSWL19e5Nh169bJzc1NkydPVrNmzRQdHa3q1asbDeeyZcvUs2dP9e7dWwEBAZozZ46%2B//57paammqrxcjSRAADAesqpiUxPT9fOnTvtHunp6aUqKTk5Wfn5%2BQoODja2hYSEKCkpSQUFBXbHJiUlKSQkRE5OTpIkJycntWvXTtu2bTP2h4aGGsfXr19f/v7%2BSkpKMjtzBu7Otoq4uIquANfi5XXpz7fflrKyKrYWXF14eEVXgKsJDpa2bJEef1zaurWiq8G12GwVXUGZio2NVUxMjN22yMhIRUVFXfPcjIwM1apVS1WrVjW2%2Bfj46MKFC8rMzFTt2rXtjr3lllvszq9Tp4727t0rSUpPT5efn1%2BR/ceOHXP4PZWEJhIAAFiOTU7lMu6AAQPUvXt3u22%2Bvr6lOvf8%2BfN2DaQk43lubm6pji08Licn56r7ywJNJAAAQBnx8/MrkgCWlpubW5Emr/C5u7t7qY4tPK6k/dWqVbuu2opDEwkAACzniksMy4yLy/WfW7duXZ06dUr5%2Bflydb3UomVkZMjd3V01atQocuzx48ftth0/ftxoYEvaX9pUtDS4sQYAAFhOQUH5PMxo2bKlXF1djZtjJCkxMVGtW7eW8xV3fgcFBWnr1q2y/X5Nqc1m05YtWxQUFGTsT0xMNI4/evSojh49auwvCzSRAAAAlUC1atXUu3dvzZgxQ9u3b1dcXJwWLVqkIUOGSLqUSubk5EiS7rvvPp05c0azZs3Svn37NGvWLJ0/f149e/aUJA0cOFCff/65Vq5cqeTkZE2ePFndunVTo0aNyqxemkgAAGA5lTGJlKSpU6cqMDBQQ4cO1cyZMxUVFaV7771XkhQWFqZ169ZJkjw9PfXOO%2B8oMTFRffv2VVJSkt599115eHhIkoKDg/Xcc8/pjTfe0MCBA1WzZk3Nnj3bfIGXcbLZ/mT31qN4GzZUdAW4Fi8vqX17KSGBj/ip7PiIn8qt8CN%2B2rXjI35uBBXUhly4UD7jurmVz7iVETfWAAAAyymvG2ushCYSAABYDk2keVwTCQAAAIeRRAIAAMshiTSPJhIAAFgOTaR5LGcDAADAYSSRAADAckgizSOJBAAAgMNIIgEAgOWQRJpHEwkAACyHJtI8lrMBAADgMJJIAABgOSSR5pFEAgAAwGEkkQAAwHJIIs2jiQQAAJZDE2key9kAAABwGEkkAACwHJJI80giAQAA4DCSSAAAYDkkkebRRAIAAMuhiTSP5WwAAAA4jCQSAABYDkmkeSSRAAAAcBhJJAAAsBySSPNoIgEAgOXQRJrHcjYAAAAcRhIJAAAshyTSPJJIAAAAOIwkEgAAWA5JpHk0kQAAwHJoIs1jORsAAAAOI4kEAACWQxJpHkkkAAAAHEYSCQAALIck0jyaSAAAYDk0keaxnA0AAACHkUQCAADLIYk0jyQSAAAADiOJBAAAlkMSaR5NJAAAsByaSPNYzgYAAIDDaCIBAIDlFBSUz6M82Ww2zZs3Tx07dlT79u01Z84cFVzlRbdt26ZHHnlEwcHB6tGjh1auXGm3/4EHHlCLFi3sHv/v//2/UtfDcjYAAMANYPHixVqzZo1iYmKUn5%2BvSZMmqU6dOhoxYkSRYzMyMjRq1CgNHDhQL730knbu3KmpU6fK19dX3bp108WLF3Xw4EEtW7ZMjRs3Ns6rVatWqeuhiQQAAJZzI14TuXTpUo0dO1ahoaGSpIkTJ2r%2B/PnFNpFxcXHy8fHR%2BPHjJUmNGzdWfHy8vvzyS3Xr1k2HDx9WXl6e2rRpIzc3t%2BuqhyYSAABYTnk1kenp6crIyLDb5uvrKz8/P1PjpqWl6ejRo7r99tuNbSEhITpy5IjS09OLjN%2B5c2e1bNmyyDhnz56VJO3bt0/169e/7gZS4ppIAACAMhMbG6u%2BffvaPWJjY02PW9iYXt4s%2Bvj4SJKOHTtW5PiGDRuqbdu2xvMTJ05o7dq1uuOOOyRJKSkpqlKlisaMGaNOnTpp8ODB2r59u0M1kUQCAADLKa8kcsCAAerevbvdNl9f31Kdm5OTo7S0tGL3ZWdnS5KqVq1qbCv8OTc395rjRkVFycfHRwMGDJAkHThwQKdPn9bDDz%2BssWPH6uOPP9bQoUO1bt061a9fv1T10kQCAACUET8/v%2Bteuk5KStKQIUOK3Tdp0iRJlxrGwiXowuaxWrVqJY557tw5/e1vf9PBgwf14YcfGsc%2B//zzysnJkaenpyRpxowZ2rJliz7//HM9/vjjpaqXJhIAAFhOZbyxpkOHDtqzZ0%2Bx%2B9LS0jR37lxlZGSoYcOGkv63xF1S0nn27FmNHDlSv/76q5YsWWJ3F7arq6vRQEqSk5OTmjZtWmISWhyuiQQAAJZzo31OZN26deXv76/ExERjW2Jiovz9/YtNPgsKChQZGanDhw/rgw8%2B0K233mq3PyIiQjExMXbH79mzR02bNi11TSSRAAAAN4CBAwdq3rx5qlevniTplVde0fDhw439J0%2BelJubm6pXr65PPvlE8fHxeuutt1SjRg0jtaxSpYq8vb3VvXt3vfHGG2rZsqWaNGmipUuXKisrS3369Cl1PTSRAADAcirjcva1jBgxQidOnFBkZKRcXFzUr18/DRs2zNjfr18/9enTR1FRUVq/fr0KCgo0ZswYuzHat2%2BvDz74QMOGDdOFCxf0wgsv6Pjx4woKCtLixYvtlrivxclms9nK6s2hEtuwoaIrwLV4eUnt20sJCVJWVkVXg6sJD6/oCnA1wcHSli1Su3bS1q0VXQ2upYLakH//u3zG7dmzfMatjLgmEgAAAA5jORsAAFjOjbicXdmQRAIAAMBhJJEAAMBySCLNo4kEAACWQxNpHsvZAAAAcBhJJAAAsBySSPNIIgEAAOAwkkgAAGA5JJHm0UQCAADLoYk0j%2BVsAAAAOIwkEgAAWA5JpHkkkQAAAHAYSSQAALAckkjzaCIBAIDl0ESax3I2AAAAHEYSCQAALIck0jySSAAAADiMJBIAAFgOSaR5NJEAAMByaCLNYzkbAAAADiOJBAAAlkMSaR5JJAAAABxGEgkAACyHJNI8mkgAAGA5NJHmsZwNAAAAh5FEAgAAyyGJNI8kEgAAAA4jiQQAAJZDEmkeTSQAALAcmkjzWM4GAACAw0giAQCA5ZBEmkcSCQAAAIeRRAIAAMshiTSPJhIAAFgOTaR5LGcDAADAYSSRAADAckgizSOJBAAAgMNIIgEAgOWQRJpHEwkAACyHJtK8Cl3OPnz4sFq0aKHDhw9f1/lTpkzRlClTSnVsRESEFixYUOL%2B1NRUff/991cdY%2B/evYqIiHD4ta%2Bme/fuWrVqVbH7cnNz1adPH504ccL06wAAgBubzWbTvHnz1LFjR7Vv315z5sxRwVW64RdeeEEtWrSweyxbtszYv2bNGoWHhysoKEhPPvmkTp486VA9N3QSGR0dXWZjTZs2Te3bt1fXrl1LPOa5557Tk08%2BWeavXZKqVatq8ODBmjt3rl566aVyfz0AAKziRkwiFy9erDVr1igmJkb5%2BfmaNGmS6tSpoxEjRhR7fEpKiiZMmKA%2BffoY2zw9PSVJ27dvV3R0tGbOnKmAgADNmjVLU6dO1TvvvFPqem7oG2u8vLzk5eX1h7zW5s2blZGRoY4dO/6hr92rVy998803OnLkSLm/FgAAVlFQUD6P8rR06VKNHTtWoaGh6tixoyZOnKjly5eXeHxKSopuu%2B02%2Bfr6Go9q1apJkpYtW6aePXuqd%2B/eCggI0Jw5c/T9998rNTW11PVUiiYyLi7OiFMff/xxnT592tj3888/q2/fvmrTpo169eql9evXG/uuXFL%2B4osvjHEmTJig8ePH2y1hp6WlaeTIkWrdurV69Oih//73v8Y4CQkJiomJMZarr/TRRx8pPDy82NdesGCBJkyYoOnTp6tdu3a64447tHDhQuPY/Px8vfrqqwoLC1NISIjGjh2rU6dOGfv37t2rRx55RK1bt1bv3r21e/duY1/VqlV15513KjY21uF5BQAAfw5paWk6evSobr/9dmNbSEiIjhw5ovT09CLHnz17VmlpaWrcuHGx4yUlJSk0NNR4Xr9%2Bffn7%2ByspKanUNVWK5ezPPvtMr776qmw2myIjI7Vw4UJNnDhRGRkZGjNmjMaNG6fOnTtr27ZtmjJliurUqWP3xqVLzea0adP0zDPP6Pbbb9fixYv1ySefGMvPkrR69Wo999xz%2Bsc//qH58%2Bdr8uTJ%2BuGHHxQdHa2DBw8qODhYY8aMKVKfzWbTjz/%2BqH/%2B858lvof169dr0KBB%2Buyzz/R///d/mjt3rsLDw9WkSRPNnz9fq1ev1osvvih/f39Nnz5d06dP1%2Buvvy5J%2BuSTTzR79mw1a9ZMM2bM0PTp0/Xxxx8bY3fq1Ekffvihxo8fX6r5TE9PV0ZGht0235wc%2Bfn6lup8VBAPD/s/UXkFB1d0BbiagAD7P1F5bd1aYS9dXqlhsb%2BDfX3l5%2BdnatzCMS8fx8fHR5J07NixIuOnpKTIyclJb7/9tv7zn//I29tbjz32mLG0nZ6eXuScOnXq6NixY6WuqVI0kZMmTVKbNm0kST179lRycrIkafny5brzzjs1ePBgSdLNN9%2Bs3bt3a8mSJUWayI8%2B%2Bkj333%2B/HnnkEUnSjBkztHHjRrtjevToob59%2B0qSRo0apTVr1ujEiRPy8fFRlSpV5OHhIW9v7yL1HT58WJmZmWratGmJ78Hb21tPP/20XFxcNHLkSC1cuFA7duxQ48aN9fHHH%2Bvpp59Wly5dJEkzZ87Uv//9b%2BPcgQMHGilnREREkWaxWbNmSk5O1sWLF%2BXi4nKN2ZRiY2MVExNjty3yyScV9Ze/XPNcVAKtWlV0BbiWLVsqugKUxocfVnQFuBYnp4quoMwV%2Bzs4MlJRUVHXPDcnJ0dpaWnF7svOzpZ0aYWyUOHPubm5RY7fv3%2B/nJyc1LRpUw0ePFibN2/Ws88%2BK09PT91zzz3KycmxG6twvOLGKkmlaCJvuukm42cvLy9duHBB0qUJ%2BPbbbxV82b/68/Ly1KRJkyJj7NmzRwMGDDCeu7q6qtUVv4wbNWpk/Fx4YWnha11N4dJzrVq1SjymYcOGdg1e9erVlZ%2Bfr1OnTikzM1OBgYHGvltuucXuP6bL67r8/Rfy9vZWQUGBMjMzVadOnWvWO2DAAHXv3t1um%2B/Bg1JCwjXPRQXy8LjUQO7YIf3%2BPwtUUo8/XtEV4GoCAi41kIMGSb%2BHEsCVyiuJLPZ3cClXApOSkjRkyJBi902aNEnSpYbRzc3N%2BFmScZ3j5Xr37q277rrLCMcCAgJ08OBBffTRR7rnnnvk5uZWpGHMzc0tdqySVIom0tm5%2BEsz8/Pz1atXLz1%2Bxf%2BwXV2Llu3i4iKbzWa37crnxaV4Vx5zNVe7jb5KlSrFjl1crVe6VrpYWKNTKf/F5ufnVzQ2P3ZMysoq1fmoYNnZ/F1VdhW4BAcHJCfzd4USlVcTWezv4FLq0KGD9uzZU%2By%2BtLQ0zZ07VxkZGWrYsKGk/y1xF9ekOjk5FVldbdq0qTZt2iRJqlu3ro4fP263//jx46VueKVKcmNNSZo0aaJDhw7p5ptvNh4bNmzQl19%2BWeTYW265RTt37jSeX7x40e4GFTMKrznIzMx0%2BNwaNWqoVq1axhK9JO3evVtdunRRTk5OqcY4deqUXF1dr5qEAgCAP6%2B6devK399fiYmJxrbExET5%2B/sX27TOnz9fw4YNs9uWnJxsXJoXFBRkN9bRo0d19OhRBQUFlbqmSt1EDho0SDt27NBrr72mgwcP6ssvv9Srr74qf3//IscOHjxYa9eu1cqVK7V//369%2BOKLOnLkSKnTOw8PDx08eLDYD/auX7%2B%2BatWqVeK/Dq4lIiJC8%2BfP16ZNm7R3717NmjVLbdu2lbu7e6nO37Nnj1q2bFnq9wIAAK7uRvyIn4EDB2revHmKj49XfHy8XnnlFbvl75MnT%2BrcuXOSpLvuukubN2/W%2B%2B%2B/r19//VUffvihVq9ereHDhxtjff7551q5cqWSk5M1efJkdevWze4Su2upFMvZJWnQoIHefvttzZs3T%2B%2B//77q1q2rKVOm6IEHHihybHBwsKZPn6433nhDp06d0n333afg4OBil5mL8/DDD2vatGkaOXKkPvvsM7t9Tk5O6tSpkxITE6/6YeQlGT16tLKysvT3v/9d%2Bfn56tatm5599tlSn5%2BYmGjclAMAAKxpxIgROnHihCIjI%2BXi4qJ%2B/frZpY39%2BvVTnz59FBUVpTZt2mj%2B/Pl6/fXXNX/%2BfDVo0ECvvPKKcZ9JcHCwnnvuOb3%2B%2Bus6ffq0OnXqpOeff96hepxsjlwUWIlt375dnp6edndQ/%2BUvf9GIESOMO7LNiI%2BPV3R0tOLi4kyP5Yjs7Gx16dJFq1evNq6BuC4bNpRdUSgfXl5S%2B/aXboDimsjK7bLPjEUlFBx86Q76du24JvJGUEFtyNSp5TPu7NnlM25lVKmXsx2xdetWjRkzRlu2bFFqaqrefvttHT16VJ07dy6T8Tt06CAfHx/9%2BOOPZTJeaX355Zfq1q2buQYSAADYuRGXsyubSr2c7YhHH31Uhw8fVlRUlLKystSyZUstXLjQobuMrmXGjBl64YUX1KlTpzIb82pyc3O1fPlyvf/%2B%2B3/I6wEAAJTWn6aJdHV1VXR0tKKjo8vtNQICArRs2bJyG/9KVatW1RdffPGHvR4AAFZhtdSwPPxplrMBAADwx/nTJJEAAAClRRJpHk0kAACwHJpI81jOBgAAgMNIIgEAgOWQRJpHEgkAAACHkUQCAADLIYk0jyYSAABYDk2keSxnAwAAwGEkkQAAwHJIIs0jiQQAAIDDSCIBAIDlkESaRxMJAAAshybSPJazAQAA4DCSSAAAYDkkkeaRRAIAAMBhJJEAAMBySCLNo4kEAACWQxNpHsvZAAAAcBhJJAAAsBySSPNIIgEAAOAwkkgAAGA5JJHm0UQCAADLoYk0j%2BVsAAAAOIwkEgAAWA5JpHkkkQAAAHAYSSQAALAckkjzaCIBAIDl0ESax3I2AAAAHEYSCQAALIck0jyaSAAAYDk0keaxnA0AAACHkUQCAADLIYk0jyQSAAAADiOJBAAAlkMSaR5NJAAAsByaSPNYzgYAAIDDSCIBAIDlkESaRxMJAABwA7DZbHrllVf0ySefqKCgQP369dPEiRPl7Fx0YXnKlCn67LPPimzv0KGDli5dKkkKDQ1VVlaW3f4tW7aoevXqpaqHJhIAAFjOjZhELl68WGvWrFFMTIzy8/M1adIk1alTRyNGjChybHR0tCZMmGA8P3LkiCIiIjRkyBBJUlpamrKyshQXFyd3d3fjOA8Pj1LXQxMJAAAs50ZsIpcuXaqxY8cqNDRUkjRx4kTNnz%2B/2CbSy8tLXl5exvMpU6bovvvuU3h4uCQpJSVFvr6%2BatSo0XXXQxMJAABQyaWlpeno0aO6/fbbjW0hISE6cuSI0tPT5efnV%2BK5P/30kzZv3qz169cb2/bt26cmTZqYqokmEgAAWE55JZHp6enKyMiw2%2Bbr63vVJq80Cse8fBwfHx9J0rFjx646/rvvvqs%2Bffqofv36xraUlBSdP39eEREROnDggFq2bKlp06Y51FjSRAIAAJSR2NhYxcTE2G2LjIxUVFTUNc/NyclRWlpasfuys7MlSVWrVjW2Ff6cm5tb4pipqanatGmToqOj7bbv379fp0%2Bf1vjx4%2BXp6amFCxdq2LBhWrt2rTw9Pa9Zq0QTCQAALKi8ksgBAwaoe/fudtt8fX1LdW5SUpJx48uVJk2aJOlSw%2Bjm5mb8LEnVqlUrccz169erZcuWuuWWW%2By2v//%2B%2B8rLyzPuxJ43b566du2qb7/9Vr169SpVvTSRAADAcsqrifTz87vupesOHTpoz549xe5LS0vT3LlzlZGRoYYNG0r63xL31ZrUH374QXfffXeR7VWrVrVLNd3c3NSwYcMSk9Di8I01AAAAlVzdunXl7%2B%2BvxMREY1tiYqL8/f1LbFptNpt%2B%2BeUXtWvXrsj28PBwrVq1ytiWnZ2tQ4cOqWnTpqWuiSQSAABYzo34ET8DBw7UvHnzVK9ePUnSK6%2B8ouHDhxv7T548KTc3N2OJ%2BsiRIzp37lyRpWwnJyd169ZNCxYsUIMGDVS7dm3Nnz9f9erVU9euXUtdD00kAADADWDEiBE6ceKEIiMj5eLion79%2BmnYsGHG/n79%2BqlPnz7GTTwnTpyQJNWsWbPIWJMmTZKrq6smTJigs2fPqmPHjnr33Xfl4uJS6nqcbDabzdxbwg1hw4aKrgDX4uUltW8vJSRIV3wNFSqZ3z%2BsF5VUcLC0ZYvUrp20dWtFV4NrqaA25I47ymfcn34qn3ErI5JIAABgOTficnZlw401AAAAcBhJJAAAsBySSPNIIgEAAOAwkkgAAGA5JJHm0UQCAADLoYk0j%2BVsAAAAOIwkEgAAWA5JpHkkkQAAAHAYSSQAALAckkjzaCIBAIDl0ESax3I2AAAAHEYSCQAALIck0jySSAAAADiMJBIAAFgOSaR5NJEAAMByaCLNYzkbAAAADiOJBAAAlkMSaR5JJAAAABxGEgkAACyHJNI8mkgAAGA5NJHmsZwNAAAAh5FEAgAAy/n/7d17cM13/sfx15GbS4iQ0Iggi11SkriVzYU6Nd2tUtusqQ0SHVprtkBs6a8AABUqSURBVNHL1CJjinYr2a61a1ZcRq1OVTVWZZXWWEs7rYhUxKIiwoYqUnE54tIQJOf3x29kmobI2TTnk3PO8zGTEZ/P98jrn%2BO88/58v58PnciGoxMJAAAAh9GJBAAAHodOZMNRRAIAAI9DEdlwLGcDAADAYXQiAQCAx6ET2XAUkQAAwONQRDYcy9kAAABwGJ1IAADgcehENhydSAAAADiMTiQAAPA4dCIbjiISAAB4HIrIhmM5GwAAAA6jEwkAADwOnciGoxMJAAAAh9GJBAAAHodOZMNRRAIAAI9DEdlwLGcDAADAYXQiAQCAx6ET2XB0IgEAAFyI3W7X5MmTlZWVVed1p0%2Bf1rPPPqvo6GiNHDlS2dnZNeZzcnI0atQoRUVFKTk5WadPn3YoB0UkAADwOFVVjfPV%2BLmr9Oabb2r37t11Xme32/XCCy8oKChIGzdu1JgxY5SSkqKSkhJJUklJiV544QUlJCToww8/VLt27fS73/1Odru93llYzgYAAB7HFZezS0tLNWPGDJ05c0Zt2rSp89rc3FydPn1amZmZatmypbp37649e/Zo48aNmj59ujZs2KA%2Bffpo8uTJkqT09HTFxsZq7969Gjx4cL3y0IkEAABwAQUFBQoJCdHGjRvVunXrOq89ePCgIiIi1LJly%2BqxAQMG6MCBA9XzAwcOrJ5r0aKFHn744er5%2BqATCQAAPE5jdSLPnz%2BvCxcu1BgLDg5Whw4dGvxvW61WWa3Wel174cKFWj%2Bzffv2OnfuXL3m64Mi0lM89pjpBHiA8%2BfPa/2SJRo3btyP8p8NGpED9wzB%2BarfS9u28V7CfTXW23jJkvXKyMioMZaSkqLp06c/8LU3b95UaWnpPeeCg4NrdBUf5MaNG/L19a0x5uvrq1u3btVrvj4oIoEm4sKFC8rIyJDVauWDD2gA3kswady4cbW6hcHBwfV67cGDB5WcnHzPuaVLl2rEiBH1zuHn56eysrIaY7du3VLz5s2r539YMN66deuB91p%2BH0UkAADAj6RDhw7/8y8vgwcPVlFR0Y%2BSo2PHjvrvf/9bY%2BzixYvV2Tp27KiLFy/Wmu/du3e9fwYP1gAAALiZqKgoFRQU6ObNm9Vj%2Bfn5ioqKqp7Pz8%2Bvnrtx44aOHDlSPV8fFJEAAABuwGaz6bvvvpMkPfLIIwoJCVFqaqqOHz%2BulStX6tChQxo7dqwk6de//rX279%2BvlStX6vjx40pNTVXnzp3rvb2PRBEJNBnBwcFKSUmp970zAO6N9xI81dixY7V69WpJkpeXl5YtW6YLFy4oISFBmzdv1tKlS9WpUydJUufOnbVkyRJt3LhRY8eOVVlZmZYuXSqLxVLvn2exO7I1OQAAACA6kQAAAPgfUEQCAADAYRSRAAAAcBhFJAAAABxGEQkAAACHUUQCAADAYRSRAAAAcBhFJAAAABxGEQkAAACHUUQCANyC3W6XzWZTWVmZ6SiAR/A2HQDwVF9//bWys7NVUFAgm80mi8Wi4OBgRUREaOjQoQoNDTUdEWjyvv32W2VmZmrXrl0qKipSVVWVpP8/N/jueykhIaH6vGAAPx7OzgacLC8vT0uXLlV%2Bfr769u2rHj16qG3btqqqqtLly5dVVFSkoqIiDRo0SFOnTtWQIUNMRwaaHJvNpoULF%2BrTTz9VTEyMYmJi7vle2r9/v7744gsNHz5cs2bNUvv27U1HB9wGRSTgRDNmzFBpaakSExM1dOhQ%2Bfv73/O68vJy/etf/9L69esVGhqqRYsWOTkp0LQlJCQoKSlJo0aNko%2BPT53X3rhxQ5s3b9YHH3ygTZs2OSkh4P4oIgEnysnJUUxMjEOvyc7OVlxcXCMlAlzT7du3H1g8/hivAXB/FJFAE2Kz2RQYGCiLxWI6CgAAdeLpbMCQ0tJSvfLKKyosLFRFRYUmTpyo2NhYWa1WHT161HQ8wGUcPXpUv/nNbxQdHa3evXvX%2BgLQOHg6GzBk/vz5Ki8vV9u2bZWVlaVjx44pMzNTmzdv1h/%2B8Ae9//77piMCLiE1NVUBAQFatGiRWrdubToO4DEoIgFDcnNzlZWVpZCQEO3YsUOPPfaYoqKi1K5dO40aNcp0PMBlFBcXa8uWLeratavpKIBHYTkbMMTPz08VFRW6cuWKvvzySz366KOSpDNnziggIMBsOMCFRERE6MSJE6ZjAB6HTiRgyIgRI/Tyyy%2BrefPmCggI0KOPPqqtW7cqLS1NTz/9tOl4QJP2/a16%2Bvfvr9mzZysxMVFhYWHy8vKqce2vfvUrZ8cDPAJPZwOG3LlzR2vXrtXZs2c1btw49ejRQ5s2bdL169c1YcIEntAG6mC1Wut1ncVi0c6dOxs5DeCZKCIBAG6noqJCfn5%2BpmMAbo0iEjDk6tWrWr16tb766ivduXNHP3wrrlmzxlAywLVcuXJFc%2BfOVc%2BePZWSkiJJGjZsmPr376833niDJ7aBRkIRCRgybdo0ffXVVxo9evQ9jz%2B8%2B2EIoG4vvfSSLl26pNdff13du3eXJBUWFiotLU2dOnXSW2%2B9ZTgh4J4oIgFDIiMjtXbtWkVGRpqOAri0gQMHav369dUF5F3Hjx/XhAkTtHfvXkPJAPfGFj%2BAIR07dlSzZrwFgYZq3ry5zp07V2vcZrPJ25tNSIDG4jV//vz5pkMAnigkJESLFi3SQw89JEkqLy/XtWvXqr%2B4jwuon7KyMi1btkyBgYHy8vKSzWZTTk6O0tLSNHLkSMXFxZmOCLgllrMBQ3r16lXj73e39LHb7bJYLCosLDQRC3A5lZWVWrx4sTZs2KCysjJJUmBgoJKSkjR16lS6kUAjoYgEDDl79myd86GhoU5KArgPm80mHx8fOvmAE/DrGWDI3SLx4sWLunXrluE0gGs7deqUDh8%2BrNu3b9ea48QaoHHQiQQM2bZtm%2BbNm6erV6/WGGc5G3DMqlWr9Oc//1kBAQFq1apVjTlOrAEaD0UkYMiwYcNktVo1ceJENW/evNY8y9lA/cTExGjKlCmaMmWK6SiAR2E5GzCkvLxcycnJCg8PNx0FcGkVFRV6/PHHTccAPA6b1AGGjB8/Xu%2B88w73QwINNHr0aK1bt67W0aEAGhfL2YAhhYWFmjRpkm7evKmgoKDqLX7u4j4uoH5mzJihbdu2KTAwUJ07d5aPj0%2BNec6hBxoHy9mAIb///e/Vs2dPjRo16p73RAKon27dumnatGmmYwAeh04kYEh0dLS2bNmisLAw01EAAHAYnUjAkOHDhysnJ0fjxo0zHQVwOampqZozZ478/f2Vmppa57Xp6elOSgV4FopIwJDQ0FAtWLBAmzZtUlhYmLy8vGrM88EHAGjKWM4GDKF7AgBwZRSRAACXM2nSJKWkpGjQoEH1uj4nJ0fLly/Xe%2B%2B918jJAM9BEQkYkpGRUed8SkqKk5IAruf48eN64403dOnSJY0YMUIxMTHq3r27AgMDVVVVpcuXL6uoqEj5%2BfnaunWrgoODNW/ePP3sZz8zHR1wGxSRgCFJSUk1/l5ZWakzZ87o6tWr%2BsUvfqG33nrLUDLAdeTl5SkzM1PZ2dm1zqFv27atYmNj9cwzz%2BiRRx4xlBBwXxSRQBOTlpYmi8XywHsmAdR05swZ2Ww2WSwWBQUFKSQkxHQkwK1RRAJNzOnTp5WQkKC8vDzTUQAAuC/OzgaamM8//1x%2Bfn6mYwAAUCf2iQQMsVqttc7L/u6773TlyhXNmjXLUCoAAOqH5WzAkKysrBpFpMVikY%2BPj/r06aOuXbsaTAYAwINRRAIAXFpycrIyMjLUpk2bGuM2m03PPfecsrKyDCUD3BvL2YATJSUl1VrCvp81a9Y0chrAdX3xxRc6dOiQpP/f5mfFihVq2bJljWtOnTqls2fPmogHeASKSMCJBg8ebDoC4BbCw8O1atUq2e122e127d%2B/Xz4%2BPtXzFotFLVu21IIFCwymBNwby9lAE3D9%2BnVVVlYqICDAdBTA5aSmpmrOnDny9/c3HQXwKBSRgEHvvvuuVq1apYsXL0qS2rVrp8TERI48BP4HNptNFRUV%2BuHHWqdOnQwlAtwby9mAIUuXLtXatWv10ksvqV%2B/fqqqqtL%2B/fuVkZEhX19fTZ061XREwCXs2bNHM2fOrP5lzG63y2KxVP9ZWFhoOCHgnuhEAoYMGzZM8%2BbNk9VqrTG%2BY8cOLViwQJ999pmhZIBr%2BeUvf6k%2BffroueeeU%2BvWrWvNh4aGGkgFuD86kYAh169fV7du3WqNh4eHy2azOT8Q4KJKSkr09ttvKywszHQUwKNw7CFgSL9%2B/bR69WpVVVVVj1VWVmr16tWKjIw0mAxwLYMHD1Z%2Bfr7pGIDHYTkbMKS4uFgTJkxQy5Yt9fDDD0uSDh8%2BrFu3bunvf/%2B7evXqZTgh0HRlZGRUf19aWqqPPvpIjz/%2BuLp06aJmzWr2R3hQDWgcFJGAQZcvX9bHH3%2Bs4uJi%2Bfn5KTw8XKNHj1arVq1MRwOatKSkpHpdZ7FY2LgfaCQUkYBBn3/%2BuZo1a6b4%2BHhJ0oIFCxQfH6%2BhQ4caTgYAQN14sAYw5L333tNf//pXvfbaa9Vj3t7eevnllzV79mw988wzBtMBruP7S9vfZ7FY5OPjow4dOig%2BPl7t27d3cjLAvdGJBAyxWq167bXXNHz48BrjO3fuVHp6unbs2GEoGeBaXn31VW3dulUPPfSQ%2BvTpI7vdrsLCQpWUlCg6OlrXrl3TuXPntGrVKkVHR5uOC7gNOpGAIZcvX1aXLl1qjYeHh1dvmgygfsaOHav58%2BfLy8tLklRVVaUFCxaovLxc6enpWrFihf74xz8qMzPTcFLAfbDFD2DIgAEDtGTJEt24caN6rKKiQitWrFC/fv0MJgNcy6effqrJkydXF5CS1KxZM02cOFHbtm2TJD355JM6evSoqYiAW6ITCRgyd%2B5cTZ48WXFxcdWbjn/zzTcKCgrSsmXLzIYDXEhQUJD27dun8PDwGuP5%2Bflq27atJOnixYvy9/c3EQ9wWxSRgCFdunTR1q1btWvXLn399dfy9vZWt27dFBcXV6OjAqBu06dP15w5c5Sfn6%2B%2BffvKbreroKBAn3zyiebOnauTJ09q1qxZevLJJ01HBdwKD9YATrRnzx79/Oc/d%2Bg1OTk5iomJaaREgHvYt2%2BfPvjgAx07dkxeXl7q0aOHJk6cqOjoaB06dEgHDhzQhAkT%2BAUN%2BBFRRAJO9Oqrr%2Br8%2BfNKTEzUsGHD7rup%2BI0bN7R9%2B3ZlZmYqJCREf/nLX5ycFACAulFEAk6Wm5ur5cuX6z//%2BY8iIyP1k5/8RIGBgaqqqlJZWZmKiop09OhRRUdH67e//a1iY2NNRwaanNTUVM2ZM0f%2B/v5KTU2t89r09HQnpQI8C/dEAk42ZMgQDRkyRCdOnFB2draOHDmiwsJCWSwWtW/fXk899ZQWLlyorl27mo4KAMB90YkEAACAw9gnEgDg8vLz8/Xiiy9qzJgx%2Bvbbb7Vy5Up98sknpmMBbo0iEgDg0rZv366pU6cqNDRUJ0%2Be1J07d%2BTt7a3Zs2dr3bp1puMBbovlbACAS3vqqaf0/PPPa/To0erXr582b96ssLAwbdmyRX/729/073//23REwC3RiQQAuLRTp04pOjq61nhkZKRKS0sNJAI8A09nAwZlZ2fr6NGjqqio0A8XBVJSUgylAlxLjx49tGvXLo0fP77G%2BD//%2BU/16NHDUCrA/VFEAob86U9/0jvvvKNevXrVOtPXYrEYSgW4ntTUVE2bNk25ubm6ffu2VqxYoVOnTunw4cNavny56XiA2%2BKeSMCQQYMG6fXXX9fIkSNNRwFc3oULF7Ru3ToVFxersrJS4eHhGj9%2BvDp16mQ6GuC2KCIBQ4YMGaL169ezqTgAwCVRRAKGZGRk6OTJk0pLS5Ofn5/pOIDLunbtmt5%2B%2B%2B373l%2B8Zs0aQ8kA98Y9kYATWa3W6vsd7Xa7SkpKtH37dgUFBalZs5qbJezcudNERMDlzJw5UwUFBXriiSfUunVr03EAj0ERCTjR9OnTTUcA3M6ePXu0Zs0aRUZGmo4CeBSKSMCJnn766ervMzIyNGXKFLVo0aLGNdevX1dGRoazowEuKzg4WF5eXqZjAB6HeyIBJzpx4oQuXbokSUpOTtaSJUsUEBBQ45pjx45p4cKFOnDggImIgEsoKSmp/n779u366KOPNHPmTHXu3LlWQckT2kDjoIgEnCg3N1fPPvtsnde0aNFCycnJeuWVV5wTCnBBvXr1qnF/8V3f32PVbrfLYrGosLDQ6fkAT0ARCRhitVr14Ycfql27dqajAC7n7Nmz9b42NDS0EZMAnosiEgAAAA7jwRrAib6/xc%2BDsMUPAKApo4gEnOj7W/x88803evfdd5WYmKi%2BffvKx8dHR44c0dq1azVp0iSDKQEAeDCWswFDEhIS9Pzzz%2BuJJ56oMb5jxw4tXrxYH3/8saFkAAA8WLMHXwKgMZw8eVI//elPa42HhYU59NAAAAAmUEQChgwYMEBpaWkqLS2tHjt9%2BrTefPNNxcfHG0wGAMCDsZwNGHL%2B/Hm9%2BOKLOnjwoAICAmS323X16lUNGTJEixcvrrUJOQAATQlFJGDY8ePHVVxcLEnq2bOnunfvbjgRAAAPRhEJOFFJSYlCQkJksVhqHNt2LxzVBgBoyigiASfq1auXdu/erfbt21cf23b3aLa7OKoNAOAKKCIBJzp79qw6deoki8XywCewOaoNANCUUUQChkyYMEFDhw5VfHy8IiIiTMcBAMAhFJGAIf/4xz%2B0e/duffnll/Ly8lJsbKzi4%2BMVFxenwMBA0/EAAKgTRSRgmN1u15EjR7Rnzx7t3r1beXl56t27tzZs2GA6GgAA98XZ2YBBlZWVKigo0P79%2B3Xw4EEdO3ZMvr6%2BatOmjeloAADUiU4kYEhSUpIOHz6sNm3aKCoqSv3799fAgQMVERGhZs04TAoA0LTxSQUY4u3tLYvFosDAQHXo0EEdO3ZUx44dKSABAC6BTiRg0J07d1RQUKC8vDzt27dPBw4cUOvWrTVw4EClp6ebjgcAwH1xTyRgkLe3t6KiotSqVSu1aNFCvr6%2B%2Buyzz5Sbm2s6GgAAdaITCRjy/vvva%2B/evdq3b5/Ky8s1aNAgxcbGKi4ujvOzAQBNHkUkYMiYMWMUFxenuLg4DRgwQL6%2BvqYjAQBQbxSRAAAAcBiPgQIAAMBhFJEAAABwGEUkAAAAHEYRCQAAAIdRRAIAAMBhFJEAAABwGEUkAAAAHPZ/z/2sffT%2B7QYAAAAASUVORK5CYII%3D" class="center-img">
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAApEAAAJFCAYAAACFhKzyAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAPYQAAD2EBqD%2BnaQAAADl0RVh0U29mdHdhcmUAbWF0cGxvdGxpYiB2ZXJzaW9uIDIuMi4yLCBodHRwOi8vbWF0cGxvdGxpYi5vcmcvhp/UCwAAIABJREFUeJzs3XlcVdX%2B//H3AWRQNJRBJTXnMSWEtBKVvJbZza6aZZio5VQ3aDLNodIsh9TqqjRadjW1yLFfal%2BLMm92cwgUc8AUZ1MmxSEmkfP7w9jXE6CcNgS2X8/H4zzkrL3XOussu5eP77X3OTa73W4XAAAA4ASXip4AAAAArj0UkQAAAHAaRSQAAACcRhEJAAAAp1FEAgAAwGkUkQAAAHAaRSQAAACcRhEJAAAAp1FEAgAAwGluFT0BAH9dSUlJWrZsmX744QelpKQoNzdXtWrVUrNmzRQeHq5%2B/frJ09OzoqcJAPgDbHztIYDyMGfOHL399tsqKCiQt7e3GjRooCpVqigtLU2//PKLJKlu3bp688031aZNmwqeLQDAWRSRAMrc8uXLNX78eFWtWlXTpk3THXfcIVdXV%2BN4cnKyxo8fr%2B3bt6tmzZpau3atatWqVYEzBgA4i2siAZS5d955R5I0ZswY3XXXXQ4FpCQ1adJEb7/9tnx9fXX69GktXLiwIqYJADCBIhJAmTpz5oyOHDkiSQoKCirxvFq1aql79%2B6SpB07dvwpcwMAlB1urAFQptzc/vd/K%2BvXr1fr1q1LPDc6OlqDBg2Sr6%2Bv0TZ27FitXLlS48aNU%2BfOnfX666/rxx9/VF5enm644Qb16dNHDz74oDw8PIodc%2BvWrfroo4%2BUkJCgzMxM1ahRQzfddJMiIyN16623Ftvn7Nmz%2BuSTT7Rhwwbt379f58%2Bfl5eXlxo0aKDbb79dgwYN0nXXXefQp0WLFpKk77//XtOnT9fXX38tFxcXtWnTRvPnz9fzzz%2BvlStX6pVXXlFoaKhiYmK0adMmnTt3TvXq1dP999%2BvIUOGyGaz6csvv9SCBQu0Z88eFRQUqGXLlnrsscfUtWvXInPNycnR8uXLFRcXp7179%2Brs2bNyd3dXYGCgwsLC9PDDD6t27doOfbp166bjx49r7dq1ysjI0Pvvv6/ExERlZWWpXr166tmzp4YOHapq1aqV%2BHcFAL/HNZEAylxERIQSEhJks9nUu3dv3XfffWrfvn2Rbe3iFBaRffv21bp165SVlaVmzZopPz9fBw4ckCSFhITo3XffVfXq1R36zpo1S/PmzZMkXXfddapXr55SU1OVlpYmSRo%2BfLieffZZhz6HDh3SkCFDdOLECbm5ualBgwby8vLS8ePHlZmZKUlq1KiRli9f7lBkFRaR7du317Zt29S8eXOdOnVKHTt21GuvvebwPr744gvl5%2BerSZMmysjIMOYzYsQI2Ww2vfvuu6pRo4bq16%2BvgwcPKisrSzabTe%2B99566dOlivOapU6c0ePBg/fzzz7LZbGrQoIGqV6%2BulJQUY0xfX1%2BtWLFCderUMfoVFpEPP/yw/v3vf8vd3V0NGzbUmTNndPLkSUlScHCwlixZIhcXNqgAlJIdAMrYrl277DfddJO9efPmxqN9%2B/b24cOH299991379u3b7RcvXiy273PPPWf0uf322%2B27d%2B82jiUkJNhvu%2B02e/Pmze0vvPCCQ7%2BPP/7Y3rx5c3toaKj9s88%2BM9oLCgrsa9asMebz6aefOvQbOHCgvXnz5vYHHnjAnpKS4tBv5cqV9pYtW9qbN29uX7RokUO/wjneeOON9i1bttjtdrv94sWL9tOnTxd5HxEREfbU1FTjnLFjx9qbN29ub9mypb1Fixb2Dz74wFiPU6dO2Xv37m1v3ry5feDAgcWuzR133GE/ePCgw7H//Oc/9qCgIHvz5s3t06dPdzh2%2B%2B23G3MZO3as/ezZs8Z7XLRokXHsq6%2B%2BKvbvBACKwz85AZS51q1ba%2BnSpQoJCTHazp8/rw0bNui1117TAw88oLCwML3xxhvKzs4udgwXFxe99dZbatWqldEWHBysV199VZK0dOlSpaSkSJLy8vI0d%2B5cSdLUqVN17733Gn1sNpvuvvtujR49WpI0d%2B5c5efnS5LS09O1b98%2BSdLLL7%2BsgIAAh369e/dWhw4dJEl79%2B4tdp49e/bUzTffbMzZx8fH4bibm5tef/11%2Bfv7G%2BeMGDFCklRQUKB//OMfeuSRR4wEsGbNmho0aJAkaffu3cY4Fy5c0NatW2Wz2TRu3Dg1bNjQ4XU6d%2B6su%2B%2B%2BW5L0888/FzvXli1baurUqUaCa7PZ9NBDD6l58%2BaSpPj4%2BGL7AUBxKCIBlIumTZtqyZIlWrVqlaKiohQcHKwqVaoYxzMyMvTOO%2B/o3nvvNbZUL3fLLbeoZcuWRdrDwsJUr149FRQUaP369ZKkbdu2KT09XdWqVdPf/va3Yudz7733ysXFRSkpKUZx5ufnp02bNikxMdEopC538eJFeXt7S7p0LWJxLi%2BUi9OiRQuHrWVJuv76642fi7vusbCYPX/%2BvNFWpUoVff3110pMTFR4eHiRPna7XVWrVr3iXMPDw2Wz2Yq0N2nSRJJ07ty5K74XALgcN9YAKFetWrVSq1atFB0drezsbCUkJGjjxo367LPPlJGRoSNHjujJJ59UbGysQ7927dqVOGaLFi107NgxHTp0SJKMNPHChQt66KGHSuzn6uqqgoICHThwwGF8T09PHT9%2BXD/99JOOHDmio0ePKjk5WXv27FFWVpakS6lhcQoTxpLUrVu3SJu7u7vxc82aNYscv/zmpN/z8PBQenq6EhMTdejQIR07dkwHDhzQnj17dObMmSvO9fKk9XKF3xp08eLFkt8IAPwORSSAP42Xl5c6deqkTp066cknn9T48eO1Zs0abd%2B%2BXbt27XL45prf3w19ucLE7ezZs5L%2Bl6Dl5eUpISHhqvMo7CdJBw4c0MSJE7VlyxaHc7y9vRUaGqrU1FQlJSWVONbVvrbRy8vriseduZElLS1NkyZN0jfffONQKHp5ealt27a6ePHiFbekLy9ei2PnPksATqCIBFCmXnzxRW3atEl9%2BvTRY489VuJ5np6emjx5sr788ktduHBBBw8edCgiCxPA4hRu8xZ%2BNFBhodamTRutWLGi1HPNyMjQwIEDlZGRocDAQD3wwANq3bq1GjdurHr16slms2nUqFFXLCL/LLm5uRo8eLCSk5Pl4%2BOjiIgI3XjjjWrSpIkaNGggV1dXvfHGG1zXCOBPQxEJoEzl5ubq8OHDiouLu2IRKV1K%2B6pVq6bMzMwiX3tYuEVdnMKirmnTppIufQSPdOnjevLz84vdDrbb7dq8ebPq1KmjwMBAubu7a/ny5crIyJCPj4%2BWL19e7FcvFt68U9Hi4uKUnJwsNzc3xcbGFrmxRlKx15YCQHnhxhoAZarwzuidO3deNRXcuHGjMjMz5ePjU%2BTbbTZs2GB89uHl1q9frxMnTsjd3V3dunWTJN18882qXr26fv311xJf8/PPP9fgwYPVs2dPo9g6duyYJCkwMLDYAnL//v3avn27pIq/XrBwrtWqVSu2gExPT9e3334rqeLnCsAaKCIBlKlOnTqpR48ekqTnn39eU6ZMMQqgQrm5uVq%2BfLmeeuopSdJTTz1V5NtSsrOz9c9//lMnTpww2jZv3qxx48ZJuvRB3YUfVVO1alXjY3OmTJmi5cuXO1wzGBcXp4kTJ0q69JE8DRo0kCQ1btxY0qVkc926dcb5drtd//nPfzRs2DBduHDBmE9FKpzrmTNntGDBAofrF7dv366HH37Y%2BHD0ip4rAGtgOxtAmZs1a5aqVq2qVatWaeHChVq4cKECAwPl6%2Bur3NxcHTp0SHl5eapSpYpGjRqliIiIImM0bNhQe/bsUffu3dW8eXNlZWUZd2Pfc889GjlypMP5w4cP19GjR/Xpp59q/PjxmjlzpurVq6eUlBSlpqZKuvRxPFOmTDH69OvXT0uWLNHhw4f1xBNP6Prrr1fNmjV14sQJZWRkqEqVKurQoYO2bNlS4dva3bp1U3BwsLZt26apU6dq3rx5ql27ttLS0pSSkiKbzabbbrtN//3vf5Wamiq73V7sx/kAQFmhiARQ5tzd3TV9%2BnQ99NBDWrt2rTZv3qyUlBQlJSXJy8tLjRo1UlhYmPr162ckbL/Xtm1bzZo1S3PmzFF8fLzc3NzUoUMHRUREGB%2BqfTmbzaaXX35ZPXr00CeffKLt27drz5498vDw0E033aR77rlH/fv3d7hD2dvbW8uWLdO8efO0fv16HTt2TOnp6apTp47Cw8M1ePBgVa1aVd27d1dSUpJ%2B%2BeUXBQYGltu6XYmrq6sWLFighQsXas2aNTp69Kh%2B/vln%2Bfv76%2B6779bAgQPVunVrdezYUZmZmUpISLjqZ1gCgBl8dzaASqXwO6d79eqlWbNmVfR0AAAl4JpIAAAAOI0iEgAAAE6jiAQAAKhk8vLydM8992jz5s0lnrN7927df//9CgoK0n333aedO3c6HF%2B9erW6d%2B%2BuoKAgPf744zp16lSZzpEiEgAAoBLJzc3VM888c8UvXcjKytKIESMUGhqqFStWKDg4WCNHjjS%2B7WvHjh2aMGGCoqKiFBsbq7NnzxofkVZWuLEGAACgkti/f79GjRolu92uvXv3auHCherYsWOR85YtW6a3335bcXFxstlsstvt6tGjhx599FH17dtXY8aMkYuLi6ZPny5JOnHihG6//XZ99dVXql%2B/fpnMlSQSAACgktiyZYs6duyo2NjYK56XmJiokJAQ4/NgbTab2rdvb3zLVmJiokJDQ43z69atq8DAQCUmJpbZXPmcSAAAgDKSmppa5Ctb/f39FRAQUKr%2BAwYMKNV5aWlpatq0qUObr6%2BvsQWemppa5DV9fX2Nr30tCxSRVsE3V1R%2BjRpJ%2B/ZJzZpJBw9W9GxwJb99RzUqKU9PqUMHacsWKSenomeDq%2BnatWJet5x%2BL8bOmaOYmBiHtqioKEVHR5fp62RnZzt8eYJ06Yse8vLyJEk5OTlXPF4WKCKBysLHR3J1vfQngD/Oze1SgeDGrzj8%2Bfr3769u3bo5tPn7%2B5f563h4eBQpCPPy8uTp6XnF415eXmU2B/4XBgAArMelfG4LCQgIKPXWtRm1a9dWenq6Q1t6errx2iUdL8uClhtrAACA9bi4lM/jTxIUFKRt27ap8EN27Ha7EhISFBQUZByPj483zj9x4oROnDhhHC8LFJEAAADXgLS0NOX8dp3vXXfdpbNnz2rKlCnav3%2B/pkyZouzsbPXs2VOSFBERoc8%2B%2B0xLly5VUlKSxowZo/Dw8DL7eB%2BJIhIAAFjRNZhEhoWFae3atZIkb29vvfvuu4qPj1ffvn2VmJio9957T1WrVpUkBQcHa/LkyXrzzTcVERGh6667TtOmTSvT%2BfBh41bB3dmVX3CwlJAgtW8vbdtW0bPBlXB3duXm7S2FhEjx8dL58xU9G1xNRd2d7eFRPuPm5pbPuJUQN9YAAADr%2BROvX/yroogEAADWQxFpGisIAAAAp5FEAgAA6yGJNI0VBAAAgNNIIgEAgPWQRJpGEQkAAKyHItI0VhAAAABOI4kEAADWQxJpGisIAAAAp5FEAgAA6yGJNI0iEgAAWA9FpGmsIAAAAJxGEgkAAKyHJNI0VhAAAABOI4kEAADWQxJpGkUkAACwHopI01hBAAAAOI0kEgAAWA9JpGmsIAAAAJxGEgkAAKyHJNI0ikgAAGA9FJGmsYIAAABwGkkkAACwHpJI01hBAAAAOI0kEgAAWA9JpGkUkQAAwHooIk1jBQEAAOA0kkgAAGA9JJGmsYIAAABwGkkkAACwHpJI0ygiAQCA9VBEmsYKAgAAwGkkkQAAwHpIIk1jBQEAAOA0kkgAAGA9JJGmUUQCAADroYg0jRUEAACA00giAQCA9ZBEmkYRCQAArIci0jRWEAAAAE4jiQQAANZTSZPI3NxcvfTSS/ryyy/l6empRx55RI888kiR8yIjI7Vly5Yi7X379tW0adN05swZdejQweGYj4%2BPNm/eXGZzpYgEAACoJGbMmKGdO3dqwYIF%2BuWXX/Tcc88pMDBQd911l8N5c%2BfO1YULF4zniYmJeuqppzRgwABJ0v79%2B%2BXj46PVq1cb57iUceFMEQkAAKynEiaRWVlZWrp0qebNm6c2bdqoTZs22rdvnxYvXlykiPTx8TF%2Bvnjxot544w0NGzZMbdu2lSQdOHBAjRo1kr%2B/f7nNt/KtIAAAQHlzcSmfhwlJSUnKz89XcHCw0RYSEqLExEQVFBSU2G/FihU6c%2BaMhg8fbrTt379fDRs2NDWfqyGJBAAAKCOpqalKS0tzaPP391dAQMBV%2B6alpalmzZpyd3c32vz8/JSbm6vMzEzVqlWrSB%2B73a73339fgwYNUrVq1Yz25ORk5efnq1%2B/fkpJSVFoaKjGjRtXqnmUFkUkAACwnnLazo6NjVVMTIxDW1RUlKKjo6/aNzs726GAlGQ8z8vLK7bP5s2bdfLkST3wwAMO7QcOHFCtWrU0btw42e12vfHGG3r00Ue1dOlSubq6OvOWSkQRCQAAUEb69%2B%2Bvbt26ObSV9rpEDw%2BPIsVi4XNPT89i%2B6xbt05dunRxuEZSktasWSObzWb0mzNnjsLCwpSYmKj27duXaj5XQxEJAACsp5ySyICAgD%2B8ZVy7dm2dPn1a%2Bfn5cnO7VKKlpaXJ09NTNWrUKLbPd999p6ioqCLtXl5eDs99fX3l4%2BOjlJSUPzS34nBjDQAAsJ5KeGNNq1at5Obmpu3btxtt8fHxatu2bbEfz3Pq1CkdPXpUISEhDu3nz5/XzTffrE2bNhltKSkpOn36tBo3bmxqjpejiAQAAKgEvLy81Lt3b02aNEk7duxQXFyc5s%2Bfr0GDBkm6lErm5OQY5%2B/bt08eHh6qV6%2Bewzje3t4KCQnRtGnTtGPHDu3atUtPP/20OnfurBYtWpTZfCkiAQCA9VTCJFKSxo0bpzZt2mjw4MF66aWXFB0drTvvvFOSFBYWprVr1xrnZmRkqEaNGrLZbEXGefXVV9W6dWuNGDFCkZGRuv766zVr1izT87uczW6328t0RFROxfwHhkomOFhKSJDat5e2bavo2eBKvv22omeAK/H2lkJCpPh46fz5ip4NrqZr14p53R49ymfcdevKZ9xKiBtrAACA9VTCb6y51lBEAgAA66GINI0VBAAAgNNIIgEAgPWQRJrGCgIAAMBpJJEAAMB6SCJNo4gEAADWQxFpGisIAAAAp5FEAgAA6yGJNI0VBAAAgNNIIgEAgPWQRJpGEQkAAKyHItI0VhAAAABOI4kEAADWQxJpGisIAAAAp5FEAgAA6yGJNI0iEgAAWA9FpGmsIAAAAJxGEgkAAKyHJNI0VhAAAABOI4kEAADWQxJpGkUkAACwHopI01hBAAAAOI0kEgAAWA9JpGmsIAAAAJxGEgkAAKyHJNI0ikgAAGA9FJGmsYIAAABwGkkkAACwHpJI0ygiAQCA9VBEmsYKAgAAwGkkkQAAwHpIIk1jBQEAAOA0kkgAAGA9JJGmUUQCAADroYg0jRUEAACA00giAQCA9ZBEmsYKAgAAwGkkkQAAwHpIIk2jiAQAANZDEWkaKwgAAACnlXkReezYMbVo0ULHjh0r9viKFSvUrVs34/kPP/yg5OTkYo%2BV1qhRo/Tf//73j034N3PnzlVkZKSpMcra999/r1GjRlX0NAAA%2BOtxcSmfh0m5ubkaP368QkNDFRYWpvnz55d47mOPPaYWLVo4PNavX28c//e//63OnTsrODhY48ePV3Z2tun5Xa7Mi8i6detq48aNqlu3bqnOHzJkiNLT0//w623atEkpKSm67bbb/vAYlVWnTp2UkpKizZs3V/RUAADAn2DGjBnauXOnFixYoIkTJyomJkb/93//V%2By5ycnJmjlzpjZu3Gg8OnXqJElat26dYmJiNHnyZC1YsECJiYmaOXNmmc61zItIV1dX%2Bfv7y9XVtayHLtZbb72liIiIP%2BW1KsKAAQP01ltvVfQ0AAD4a6mESWRWVpaWLl2qCRMmqE2bNrrjjjs0bNgwLV68uMi5eXl5OnbsmNq2bSt/f3/j4e7uLklauHChBg8erNtvv13t2rXTSy%2B9pOXLl5dpGlnqd3vvvfdq0aJFxvOHH35YAwcONJ7HxsYqIiKiyHZ2SkqKhg0bpptuukl9%2BvTRkSNHjD6FW9eDBg3S3LlzJUl2u11z585Vx44dFRoaqldffbXEOR04cEAJCQnq2rWr0Xb48GENHTpUwcHBCg8P18KFC41jycnJGjp0qNq3b6/OnTsrJiZGBQUFRcYtbls9MjLSmOPYsWM1c%2BZMPfXUUwoKCtLdd9%2Bt3bt364033lBoaKi6dOmiL774QtL/tve//PJLde/eXW3bttXIkSOVmZkpSbpw4YKef/55dezYUcHBwXr00UeVkpJivG6XLl0UHx%2BvAwcOlLgOAADASZWwiExKSlJ%2Bfr6Cg4ONtpCQECUmJhapVw4cOCCbzab69esXGefixYv66aefFBoaarTddNNNunDhgpKSkkzN8XKlvjs7LCxMW7Zs0cCBA3XhwgVt375dBQUFunDhgqpUqaLvv/9enTt3LtLvySefVNWqVbV06VLt27dPEyZMUM2aNSVJy5Yt06233qq5c%2BeqU6dOWrdunX755RcdPHhQn3zyifbs2aNnnnlGt956q7p06VJk7O%2B%2B%2B07t2rWTt7e3pEvXETzyyCNq06aNPv30Ux09elSjRo1S/fr1FRQUpAEDBqhbt25aunSpDh48qOeff17e3t4aMmSI0wu3YMECjR8/Xk8//bTGjRunwYMHq0ePHoqNjdVHH32kiRMnqkePHsb577zzjl5//XXZ7XY99thj%2BvDDD/X0009r8eLF2rp1q%2BbPny9PT09NmjRJU6dO1ezZsyVJ3t7eatu2rTZu3KjGjRuXam6pqalKS0tzaPNv1EgBPj5Ov0/8iVq2dPwTlddv/5%2BDSsrLy/FPVF7nz1f0DMpcsb%2BD/f0VEBBw1b5paWmqWbOmkSZKkp%2Bfn3Jzc5WZmalatWoZ7QcOHJC3t7fGjBmjLVu2qE6dOoqOjlbXrl119uxZ5ebmOrymm5ubfHx8dPLkyTJ4l7%2BNWdoTw8LCNGrUKNntdu3atUsNGjTQqVOntHv3brVt21abN2/W8OHDHfrs27dP27Zt0/r16xUYGKhmzZpp586dxt5%2B4WJcd911qlatmiSpSpUqeuWVV1S1alU1atRI7733npKSkootInfv3q0mTZoYzzdu3KhTp05p6tSp8vb2VrNmzfT888/LxcVFq1evlpeXl15%2B%2BWW5ubmpSZMmSktL05tvvvmHisgbb7xRAwYMkCTdc889mjp1qp5//nl5enoqMjJSH3/8scO1nk888YTatWsnSerVq5d%2B%2BuknSZeSSg8PD11//fXy8fHR9OnTjZSyUNOmTbV79%2B5Szy02NlYxMTEObVFPPqnoJ590%2Bn2iAixZUtEzAP4aWreu6BngajZsqLjXLqeP%2BCn2d3BUlKKjo6/aNzs726GAlGQ8z8vLc2g/cOCAcnJyFBYWphEjRuirr77SY489ptjYWPn5%2BTn0vXys349jRqmLyNDQUGVnZ2vfvn3aunWrQkNDlZqaqvj4eLm6usrFxUU33nijjh8/bvTZv3%2B/fHx8FBgYaLS1bdu2xAtEJcnX11dVq1Y1nlevXr3EN3zq1Cm1atXKeH7w4EE1atTISCYl6b777pMkTZw4UW3atJGb2//ecnBwsNLS0nT27NnSLoOhXr16xs%2Benp7y8/OTp6enJMnDw0OS41/4DTfcYPzs7e2tCxcuSJL69%2B%2BvNWvWKCwsTB06dFD37t3Vt29fh9fy8fFxKn7u379/ke14/169pAULSj0GKkDLlpcKyAEDpDLcbkA5mDevomeAK/HyulRA7t4tlfHdqMDVFPs72N%2B/VH09PDyK1DyFzwtrjEL//Oc/FRkZqeuuu06S1LJlS%2B3atUuffvqpnn76aYe%2Bl4/lVYYJfamLSHd3d4WGhmrLli368ccf9Y9//EOpqan68ccfdfHiRXXq1Ek2m61IP7vd7vC8SpUqV3yd4m7I%2Bf0YhWw2my5evGg8v7xA/L3Cwu5yhdcXXD5G4bi/l5%2Bf7/D896/lcpV/0ZT0vps1a6ZvvvlG3377rb799lu9/vrrWr16tRYvXmzMo6Cg4KrjXy4gIKBobH7wYKn7o4IlJUnbtlX0LHAlf8EtuL%2Bk7Gz%2BrlCyckoii/0dXEq1a9fW6dOnlZ%2Bfb9QZaWlp8vT0VI0aNRzOdXFxMQrIQo0bNzYCPA8PD6Wnpxs7tvn5%2BcrMzCx1QVsaTq1g4XWR27dvV0hIiEJCQpSQkKCNGzcWez1k8%2BbNdebMGR0%2BfNho27Nnj/lZ/8bX19dh67dhw4Y6fPiww51Hr776ql555RU1atRIu3btMhJASdq2bZtq1aoln99dK1ilShX9%2BuuvxnO73V7i516atWrVKq1fv149e/bUq6%2B%2Bqvfff1/x8fHKyMgwzjl9%2BrQRTQMAgDJQCW%2BsadWqldzc3LR9%2B3ajLT4%2BXm3bti0SJo0dO1bjxo1zaEtKSlLjxo3l4uKitm3bKj4%2B3ji2fft2ubm5qWUZXnfvdBH5zTffyNvbW7Vr11br1q2VnZ2trVu3FltENmnSRLfeeqvGjx%2BvpKQkxcXFOdzhLUlVq1bVvn37dO7cOacn37p1a%2B3du9dhfn5%2BfnrxxReVnJysr7/%2BWp988onCwsLUq1cv5eXlGcfi4uI0d%2B5cRUREFEkeb7zxRmVmZuqjjz7S0aNHNW3aNJ05c8bp%2BZXGuXPnNGXKFP3www86evSoPv/8c9WpU8e4%2BUiS9u7dq9Zc2wMAwF%2Bal5eXevfurUmTJmnHjh2Ki4vT/PnzNWjQIEmXUsmcnBxJlz7h5vPPP9eqVat0%2BPBhxcTEKD4%2B3vjknAEDBuiDDz5QXFycduzYoUmTJumBBx6omO1s6dINHr6%2BvgoJCZF0aes5ODi4yB1Dl3vjjTf0wgsv6MEHH1RgYKAiIyO1YsUK43hkZKRmzJihI0eOOF0dd%2B7cWa%2B%2B%2Bqp%2B/fVXVatWTW5ubnrrrbcS18gbAAAgAElEQVQ0efJk9enTR35%2BfhozZozCw8MlSe%2B//76mTJmi3r17q1atWho8eLBGjhxZZNyGDRvqueee09tvv61//etf6tu3r8Od1mXpoYce0smTJzV69GidOXNGN954o95%2B%2B21jW//XX3/V3r17i72xCAAA/EGV9Luzx40bp0mTJmnw4MHy9vZWdHS07rzzTkmXwrJp06apb9%2B%2BuvPOOzVx4kS9/fbb%2BuWXX9SsWTO9//77xj0bf//733X8%2BHG9%2BOKLysvL05133qnRo0eX6Vxt9pIuOLxGREZG6r777lPv3r0reirlYuXKlfrss8/073//29xAxVzniUomOFhKSJDat%2BeayMru228rega4Em9vKSREio/nmshrwWWf9fynmjatfMb93RbzX1nlLMOdMHLkSH3yyScVPY1yExsbqxEjRlT0NAAA%2BGuphNdEXmuu%2BXcbFhamOnXqaOPGjRU9lTL33XffqW7dun/J7wUHAKBCUUSa5tQ1kZXVv/71r4qeQrno3LlzsTcsAQAAVLS/RBEJAADgFIulhuWBFQQAAIDTSCIBAID1kESaRhEJAACshyLSNFYQAAAATiOJBAAA1kMSaRorCAAAAKeRRAIAAOshiTSNIhIAAFgPRaRprCAAAACcRhIJAACshyTSNFYQAAAATiOJBAAA1kMSaRpFJAAAsB6KSNNYQQAAADiNJBIAAFgPSaRprCAAAACcRhIJAACshyTSNIpIAABgPRSRprGCAAAAcBpJJAAAsB6SSNMoIgEAgPVQRJrGCgIAAMBpJJEAAMB6SCJNYwUBAADgNJJIAABgPSSRplFEAgAA66GINI0VBAAAgNNIIgEAgPWQRJrGCgIAAMBpJJEAAMB6SCJNo4gEAADWQxFpGisIAAAAp5FEAgAA6yGJNI0VBAAAgNNIIgEAgPWQRJpGEQkAAKyHItI0VhAAAABOo4gEAADW4%2BJSPg%2BTcnNzNX78eIWGhiosLEzz588v8dxvv/1W//jHPxQcHKxevXrp66%2B/djgeGhqqFi1aODx%2B/fVX03MsxHY2AABAJTFjxgzt3LlTCxYs0C%2B//KLnnntOgYGBuuuuuxzOS0pKUlRUlMaMGaOuXbtq48aNevLJJ7Vs2TK1bNlSKSkpOnfunOLi4uTp6Wn0q1q1apnNlSISAABYTyW8JjIrK0tLly7VvHnz1KZNG7Vp00b79u3T4sWLixSRq1ev1i233KJBgwZJkm644QZ98803%2BuKLL9SyZUslJyfL399f9evXL7f5UkQCAADrKaciMjU1VWlpaQ5t/v7%2BCggIuGrfpKQk5efnKzg42GgLCQnRO%2B%2B8o4KCArlcNuc%2BffrowoULRcY4d%2B6cJGn//v1q1KjRH30bpUIRCQAAUEZiY2MVExPj0BYVFaXo6Oir9k1LS1PNmjXl7u5utPn5%2BSk3N1eZmZmqVauW0d6kSROHvvv27dMPP/ygBx98UJKUnJys7OxsRUZG6uDBg2rVqpXGjx9fpoUlRSQAALCeckoi%2B/fvr27dujm0%2Bfv7l6pvdna2QwEpyXiel5dXYr9Tp04pOjpa7du319/%2B9jdJ0oEDB3TmzBk988wz8vb21rx58zRkyBCtWbNG3t7ezrylElFEAgAAlJGAgIBSbV0Xx8PDo0ixWPj88ptjLpeenq6HH35Ydrtdc%2BbMMba8P/jgA124cEHVqlWTJM2aNUtdu3bV%2BvXr1atXrz80v9%2BjiAQAANZTCW%2BsqV27tk6fPq38/Hy5uV0q0dLS0uTp6akaNWoUOT8lJcW4sWbhwoUO293u7u4OqaaHh4fq1aunlJSUMptv5VtBAACA8lYJPyeyVatWcnNz0/bt2422%2BPh4tW3b1uGmGunSndzDhg2Ti4uLFi1apNq1axvH7Ha7unfvrhUrVjicf/jwYTVu3NjUHC9HEgkAAFAJeHl5qXfv3po0aZKmTp2q1NRUzZ8/X9OmTZN0KZWsXr26PD099e677%2BrIkSP66KOPjGPSpW3v6tWrKzw8XHPnztX111%2BvWrVqafbs2apTp466du1aZvOliAQAANZTCbezJWncuHGaNGmSBg8eLG9vb0VHR%2BvOO%2B%2BUJIWFhWnatGnq27ev1q1bp5ycHN1///0O/fv06aPp06dr9OjRcnNz06hRo3T%2B/Hndcssteu%2B99%2BTq6lpmc7XZ7XZ7mY2Gystmq%2BgZ4GqCg6WEBKl9e2nbtoqeDa7k228rega4Em9vKSREio%2BXzp%2Bv6NngasowGXPKDz%2BUz7i33lo%2B41ZCJJEAAMB6KmkSeS2hiAQAANZDEWkaKwgAAACnkUQCAADrIYk0jRUEAACA00giAQCA9ZBEmkYRCQAArIci0jRWEAAAAE4jiQQAANZDEmkaKwgAAACnkUQCAADrIYk0jSISAABYD0WkaawgAAAAnEYSCQAArIck0jSKSAAAYD0UkaaxggAAAHAaSSQAALAekkjTWEEAAAA4jSQSAABYD0mkaRSRAADAeigiTWMFAQAA4DSSSAAAYD0kkaaxggAAAHAaSSQAALAekkjTKCIBAID1UESaxgoCAADAaSSRAADAekgiTWMFAQAA4DSSSAAAYD0kkaZRRAIAAOuhiDSNFQQAAIDTSCIBAID1kESaxgoCAADAaSSRAADAekgiTaOIBAAA1kMRaRorCAAAAKeRRAIAAOshiTSNFQQAAIDTSCIBAID1kESaRhEJAACshyLSNFYQAAAATqOIBAAA1uPiUj4Pk3JzczV%2B/HiFhoYqLCxM8%2BfPL/Hc3bt36/7771dQUJDuu%2B8%2B7dy50%2BH46tWr1b17dwUFBenxxx/XqVOnTM/vchSRAAAAlcSMGTO0c%2BdOLViwQBMnTlRMTIz%2B7//%2Br8h5WVlZGjFihEJDQ7VixQoFBwdr5MiRysrKkiTt2LFDEyZMUFRUlGJjY3X27FmNGzeuTOdKEQkAAKynEiaRWVlZWrp0qSZMmKA2bdrojjvu0LBhw7R48eIi565du1YeHh4aM2aMmjRpogkTJqhatWpGwblo0SL17NlTvXv3VsuWLTVjxgxt2LBBR48eNTXHy1FEAgAA6ymnIjI1NVW7du1yeKSmppZqSklJScrPz1dwcLDRFhISosTERBUUFDicm5iYqJCQENlsNkmSzWZT%2B/bttX37duN4aGiocX7dunUVGBioxMREsytn4O5sq/j224qeAa7G2/vSn/PmSefPV%2BxccGXh4RU9A1xJcLCUkCANHy5t21bRs8HV2O0VPYMyFRsbq5iYGIe2qKgoRUdHX7VvWlqaatasKXd3d6PNz89Pubm5yszMVK1atRzObdq0qUN/X19f7du3T5KUmpqqgICAIsdPnjzp9HsqCUUkAACwHLts5TJu//791a1bN4c2f3//UvXNzs52KCAlGc/z8vJKdW7heTk5OVc8XhYoIgEAAMpIQEBAkQSwtDw8PIoUeYXPPT09S3Vu4XklHffy8vpDcysORSQAALCc311iWGZcXf9439q1a%2Bv06dPKz8%2BXm9ulEi0tLU2enp6qUaNGkXPT09Md2tLT040CtqTjpU1FS4MbawAAgOUUFJTPw4xWrVrJzc3NuDlGkuLj49W2bVu5/O7O76CgIG3btk32364ptdvtSkhIUFBQkHE8Pj7eOP/EiRM6ceKEcbwsUEQCAABUAl5eXurdu7cmTZqkHTt2KC4uTvPnz9egQYMkXUolc3JyJEl33XWXzp49qylTpmj//v2aMmWKsrOz1bNnT0lSRESEPvvsMy1dulRJSUkaM2aMwsPDVb9%2B/TKbL0UkAACwnMqYRErSuHHj1KZNGw0ePFgvvfSSoqOjdeedd0qSwsLCtHbtWkmSt7e33n33XcXHx6tv375KTEzUe%2B%2B9p6pVq0qSgoODNXnyZL355puKiIjQddddp2nTppmf4GVsdvtf7N56FG/DhoqeAa7G21sKCZHi4/mIn8qOj/ip3Ao/4qd9ez7i51pQQWVIbm75jOvhUT7jVkbcWAMAACynvG6ssRKKSAAAYDkUkeZxTSQAAACcRhIJAAAshyTSPIpIAABgORSR5rGdDQAAAKeRRAIAAMshiTSPJBIAAABOI4kEAACWQxJpHkUkAACwHIpI89jOBgAAgNNIIgEAgOWQRJpHEgkAAACnkUQCAADLIYk0jyISAABYDkWkeWxnAwAAwGkkkQAAwHJIIs0jiQQAAIDTSCIBAIDlkESaRxEJAAAshyLSPLazAQAA4DSSSAAAYDkkkeaRRAIAAMBpJJEAAMBySCLNo4gEAACWQxFpHtvZAAAAcBpJJAAAsBySSPNIIgEAAOA0kkgAAGA5JJHmUUQCAADLoYg0j%2B1sAAAAOI0kEgAAWA5JpHkkkQAAAHAaSSQAALAckkjzKCIBAIDlUESax3Y2AAAAnEYSCQAALIck0jySSAAAADiNJBIAAFgOSaR5FJEAAMByKCLNYzsbAAAATqOIBAAAllNQUD6P8mS32zVr1izdcsst6tChg2bMmKGCK7zo9u3b9eCDDyo4OFg9evTQ0qVLHY7fe%2B%2B9atGihcPj559/LvV82M4GAAC4Bnz44YdavXq1YmJilJ%2Bfr9GjR8vX11dDhw4tcm5aWpqGDx%2BuiIgITZ8%2BXbt27dK4cePk7%2B%2Bv8PBwXbx4UYcOHdKiRYvUsGFDo1/NmjVLPR%2BKSAAAYDnX4jWRCxcu1BNPPKHQ0FBJ0rPPPqvZs2cXW0TGxcXJz89PzzzzjCSpYcOG2rx5sz7//HOFh4fr2LFjunDhgtq1aycPD48/NB%2BKSAAAYDnlVUSmpqYqLS3Noc3f318BAQGmxk1JSdGJEyd08803G20hISE6fvy4UlNTi4zfuXNntWrVqsg458%2BflyTt379fdevW/cMFpMQ1kQAAAGUmNjZWffv2dXjExsaaHrewML28WPTz85MknTx5ssj59erV00033WQ8z8jI0Jo1a3TrrbdKkpKTk1WlShWNHDlSnTp10sCBA7Vjxw6n5kQSCQAALKe8ksj%2B/furW7duDm3%2B/v6l6puTk6OUlJRij2VlZUmS3N3djbbCn/Py8q46bnR0tPz8/NS/f39J0sGDB3XmzBndf//9euKJJ/Tpp59q8ODBWrt2rerWrVuq%2BVJEAgAAlJGAgIA/vHWdmJioQYMGFXts9OjRki4VjIVb0IXFo5eXV4lj/vrrr/rnP/%2BpQ4cOacmSJca5L7/8snJycuTt7S1JmjRpkhISEvTZZ5/p0UcfLdV8KSIBAIDlVMYbazp27Ki9e/cWeywlJUUzZ85UWlqa6tWrJ%2Bl/W9wlJZ3nz5/XsGHDdOTIES1YsMDhLmw3NzejgJQkm82mxo0bl5iEFodrIgEAgOVca58TWbt2bQUGBio%2BPt5oi4%2BPV2BgYLHJZ0FBgaKionTs2DF99NFHatasmcPxyMhIxcTEOJy/d%2B9eNW7cuNRzIokEAAC4BkRERGjWrFmqU6eOJOm1117TI488Yhw/deqUPDw8VK1aNS1btkybN2/W22%2B/rRo1ahipZZUqVeTj46Nu3brpzTffVKtWrdSoUSMtXLhQ586dU58%2BfUo9H4pIAABgOZVxO/tqhg4dqoyMDEVFRcnV1VX9%2BvXTkCFDjOP9%2BvVTnz59FB0drXXr1qmgoEAjR450GKNDhw766KOPNGTIEOXm5uqVV15Renq6goKC9OGHHzpscV%2BNzW6328vqzaES27ChomeAq/H2lkJCpPh46bfP8UIlFR5e0TPAlQQHSwkJUvv20rZtFT0bXE0FlSFffFE%2B4/bsWT7jVkZcEwkAAACnsZ0NAAAs51rczq5sSCIBAADgNJJIAABgOSSR5lFEAgAAy6GINI/tbAAAADiNJBIAAFgOSaR5JJEAAABwGkkkAACwHJJI8ygiAQCA5VBEmsd2NgAAAJxGEgkAACyHJNI8kkgAAAA4jSQSAABYDkmkeRSRAADAcigizWM7GwAAAE4jiQQAAJZDEmkeSSQAAACcRhIJAAAshyTSPIpIAABgORSR5rGdDQAAAKeRRAIAAMshiTSPJBIAAABOI4kEAACWQxJpHkUkAACwHIpI89jOBgAAgNNIIgEAgOWQRJpHEgkAAACnkUQCAADLIYk0jyISAABYDkWkeWxnAwAAwGkkkQAAwHJIIs0jiQQAAIDTSCIBAIDlkESaRxEJAAAshyLSPLazAQAA4DSSSAAAYDkkkeaRRAIAAMBpJJEAAMBySCLNo4gEAACWQxFpXoVuZx87dkwtWrTQsWPH/lD/sWPHauzYsaU6NzIyUnPnzi3x%2BNGjR7Vhw4YrjrFv3z5FRkY6/dpX0q1bN61YsaLYY3l5eerTp48yMjJMvw4AALi22e12zZo1S7fccos6dOigGTNmqOAK1fArr7yiFi1aODwWLVpkHF%2B9erW6d%2B%2BuoKAgPf744zp16pRT87mmk8gJEyaU2Vjjx49Xhw4d1LVr1xLPmTx5sh5//PEyf%2B2SuLu7a%2BDAgZo5c6amT59e7q8HAIBVXItJ5IcffqjVq1crJiZG%2Bfn5Gj16tHx9fTV06NBiz09OTtaoUaPUp08fo83b21uStGPHDk2YMEEvvfSSWrZsqSlTpmjcuHF69913Sz2fa/rGmurVq6t69ep/ymtt3bpVaWlpuuWWW/7U1%2B7Vq5e%2B%2BeYbHT9%2BvNxfCwAAqygoKJ9HeVq4cKGeeOIJhYaG6pZbbtGzzz6rxYsXl3h%2BcnKyWrduLX9/f%2BPh5eUlSVq0aJF69uyp3r17q2XLlpoxY4Y2bNigo0ePlno%2BlaKIjIuLM%2BLURx99VGfOnDGO/fjjj%2Brbt6/atWunXr16ad26dcax328p/7//9/%2BMcUaNGqVnnnnGYQs7JSVFw4YNU9u2bdWjRw/997//NcbZsmWLYmJijO3q3/v444/VvXv3Yl977ty5GjVqlCZOnKj27dvr1ltv1bx584xz8/Pz9frrryssLEwhISF64okndPr0aeP4vn379OCDD6pt27bq3bu39uzZYxxzd3fXbbfdptjYWKfXFQAA/DWkpKToxIkTuvnmm422kJAQHT9%2BXKmpqUXOP3/%2BvFJSUtSwYcNix0tMTFRoaKjxvG7dugoMDFRiYmKp51QptrNXrlyp119/XXa7XVFRUZo3b56effZZpaWlaeTIkXr66afVuXNnbd%2B%2BXWPHjpWvr6/DG5cuFZvjx4/X888/r5tvvlkffvihli1bZmw/S9KqVas0efJkvfjii5o9e7bGjBmj7777ThMmTNChQ4cUHByskSNHFpmf3W7X999/r3/9618lvod169ZpwIABWrlypb766ivNnDlT3bt3V6NGjTR79mytWrVKU6dOVWBgoCZOnKiJEydqzpw5kqRly5Zp2rRpatKkiSZNmqSJEyfq008/Ncbu1KmTlixZomeeeaZU65mamqq0tDSHNv%2BcHAX4%2BZWqPyrIb/86NP5E5RUcXNEzwJW0bOn4Jyqvbdsq7KXLKzUs9newv78CAgJMjVs45uXj%2BP32e/3kyZNFxk9OTpbNZtM777yj//znP/Lx8dHDDz9sbG2npqYW6ePr66uTJ0%2BWek6VoogcPXq02rVrJ0nq2bOnkpKSJEmLFy/WbbfdpoEDB0qSbrjhBu3Zs0cLFiwoUkR%2B/PHHuvvuu/Xggw9KkiZNmqSNGzc6nNOjRw/17dtXkjR8%2BHCtXr1aGRkZ8vPzU5UqVVS1alX5%2BPgUmd%2BxY8eUmZmpxo0bl/gefHx89Nxzz8nV1VXDhg3TvHnztHPnTjVs2FCffvqpnnvuOXXp0kWS9NJLL%2BmLL74w%2BkZERBgpZ2RkZJFisUmTJkpKStLFixfl6up6ldWUYmNjFRMT49AW9fjjiu7R46p9UQm0bl3RM8DVJCRU9AxQGkuWVPQMcDU2W0XPoMwV%2Bzs4KkrR0dFX7ZuTk6OUlJRij2VlZUm6tENZqPDnvLy8IucfOHBANptNjRs31sCBA7V161a98MIL8vb21h133KGcnByHsQrHK26sklSKIrJBgwbGz9WrV1dubq6kSwuwfv16BV/2r/4LFy6oUaNGRcbYu3ev%2Bvfvbzx3c3PTjTfe6HBO/fr1jZ8LLywtfK0rKdx6rlmzZonn1KtXz6HAq1atmvLz83X69GllZmaqTZs2xrGmTZs6/Md0%2Bbwuf/%2BFfHx8VFBQoMzMTPn6%2Bl51vv3791e3bt0c2vyPHZPi46/aFxXIy%2BtSAbl7t5SdXdGzwZUMH17RM8CVtGx5qYAcMED6LZQAfq%2B8kshifwf7%2B5eqb2JiogYNGlTssdGjR0u6VDB6eHgYP0syrnO8XO/evXX77bcb4VjLli116NAhffzxx7rjjjvk4eFRpGDMy8srdqySVIoi0sWl%2BEsz8/Pz1atXLz366KMO7W5uRaft6uoqu93u0Pb758WleL8/50qudBt9lSpVih27uLn%2B3tXSxcI52kr5L7aAgICisXl6unT%2BfKn6o4JlZ/N3VdlV4BYcnJCUxN8VSlReRWSxv4NLqWPHjtq7d2%2Bxx1JSUjRz5kylpaWpXr16kv63xV1ckWqz2YrsrjZu3FibNm2SJNWuXVvp6ekOx9PT00td8EqV5MaakjRq1EiHDx/WDTfcYDy%2B/vprff7550XObdq0qXbt2mU8v3jxosMNKmYUXnOQmZnpdN8aNWqoZs2axha9JO3Zs0ddunRRTk5OqcY4ffq03NzcrpiEAgCAv67atWsrMDBQ8ZftKsbHxyswMLDYonX27NkaMmSIQ1tSUpJxaV5QUJDDWCdOnNCJEycUFBRU6jlV6iJywIAB2rlzp9544w0dOnRIn3/%2BuV5//XUFBgYWOXfgwIFas2aNli5dqgMHDmjq1Kk6fvx4qdO7qlWr6tChQ8V%2BsHfdunVVs2bNEv91cDWRkZGaPXu2Nm3apH379mnKlCm66aab5OnpWar%2Be/fuVatWrUr9XgAAwJVdix/xExERoVmzZmnz5s3avHmzXnvtNYft71OnTunXX3%2BVJN1%2B%2B%2B3aunWrPvjgAx05ckRLlizRqlWr9MgjjxhjffbZZ1q6dKmSkpI0ZswYhYeHO1xidzWVYju7JNdff73eeecdzZo1Sx988IFq166tsWPH6t577y1ybnBwsCZOnKg333xTp0%2Bf1l133aXg4OBit5mLc//992v8%2BPEaNmyYVq5c6XDMZrOpU6dOio%2BPv%2BKHkZdkxIgROnfunJ566inl5%2BcrPDxcL7zwQqn7x8fHGzflAAAAaxo6dKgyMjIUFRUlV1dX9evXzyFt7Nevn/r06aPo6Gi1a9dOs2fP1pw5czR79mxdf/31eu2114z7TIKDgzV58mTNmTNHZ86cUadOnfTyyy87NR%2Bb3ZmLAiuxHTt2yNvb2%2BEO6r///e8aOnSocUe2GZs3b9aECRMUFxdneixnZGVlqUuXLlq1apVxDcQfcpWvdEQl4O0thYRcugGKayIrt/Dwip4BriQ4%2BNId9O3bc03ktaCCypBx48pn3GnTymfcyqhSb2c7Y9u2bRo5cqQSEhJ09OhRvfPOOzpx4oQ6d%2B5cJuN37NhRfn5%2B%2Bv7778tkvNL6/PPPFR4ebq6ABAAADq7F7ezKplJvZzvjoYce0rFjxxQdHa1z586pVatWmjdvnlN3GV3NpEmT9Morr6hTp05lNuaV5OXlafHixfrggw/%2BlNcDAAAorb/Mdjaugu3syo/t7GsH29mVG9vZ15YKKkN%2B%2B9jFMjdzZvmMWxn9ZbazAQAA8Of5y2xnAwAAlJbVrl8sDxSRAADAcigizWM7GwAAAE4jiQQAAJZDEmkeSSQAAACcRhIJAAAshyTSPIpIAABgORSR5rGdDQAAAKeRRAIAAMshiTSPJBIAAABOI4kEAACWQxJpHkUkAACwHIpI89jOBgAAgNNIIgEAgOWQRJpHEgkAAACnkUQCAADLIYk0jyISAABYDkWkeWxnAwAAwGkkkQAAwHJIIs0jiQQAAIDTSCIBAIDlkESaRxEJAAAshyLSPLazAQAA4DSSSAAAYDkkkeaRRAIAAMBpJJEAAMBySCLNo4gEAACWQxFpHtvZAAAAcBpJJAAAsBySSPMoIgEAgOVQRJrHdjYAAACcRhIJAAAshyTSPJJIAAAAOI0kEgAAWA5JpHkUkQAAwHIoIs1jOxsAAABOI4kEAACWQxJpHkUkAADANcBut%2Bu1117TsmXLVFBQoH79%2BunZZ5%2BVi0vRjeWxY8dq5cqVRdo7duyohQsXSpJCQ0N17tw5h%2BMJCQmqVq1aqeZDEQkAACznWkwiP/zwQ61evVoxMTHKz8/X6NGj5evrq6FDhxY5d8KECRo1apTx/Pjx44qMjNSgQYMkSSkpKTp37pzi4uLk6elpnFe1atVSz4ciEgAAWM61WEQuXLhQTzzxhEJDQyVJzz77rGbPnl1sEVm9enVVr17deD527Fjddddd6t69uyQpOTlZ/v7%2Bql%2B//h%2BeD0UkAABAJZeSkqITJ07o5ptvNtpCQkJ0/PhxpaamKiAgoMS%2BP/zwg7Zu3ap169YZbfv371ejRo1MzYkiEgAAWE55JZGpqalKS0tzaPP3979ikVcahWNePo6fn58k6eTJk1cc/7333lOfPn1Ut25doy05OVnZ2dmKjIzUwYMH1apVK40fP96pwpIiEgAAoIzExsYqJibGoS0qKkrR0dFX7ZuTk6OUlJRij2VlZUmS3N3djbbCn/Py8koc8%2BjRo9q0aZMmTJjg0H7gwAGdOXNGzzzzjLy9vTVv3jwNGTJEa9askbe391XnKlFEAgAACyqvJLJ///7q1q2bQ5u/v3%2Bp%2BiYmJho3vvze6NGjJV0qGD08PIyfJcnLy6vEMdetW6dWrVqpadOmDu0ffPCBLly4YNyJPWvWLHXt2lXr169Xr169SjVfikgAAGA55VVEBgQE/OGt644dO2rv3r3FHktJSdHMmTOVlpamevXqSfrfFveVitTvvvtOf/vb34q0u7u7O6SaHh4eqlevXolJaHH4xhoAAIBKrnbt2goMDFR8fLzRFjDNl9UAABcuSURBVB8fr8DAwBKLVrvdrp9%2B%2Bknt27cv0t69e3etWLHCaMvKytLhw4fVuHHjUs%2BJJBIAAFjOtfgRPxER/7%2B9ew%2Bu%2Bc7/OP46cnMJERJEBFnsoiRxqzQXIWu6W6VWNlPrkjC01myjl6HImKLdSrardu2Ky6jVqarGKqu0xlraUREpkqIiwqJKUnE54haC5Pz%2B%2BI1M01TkbJp8cs55PmYy4vP5Jnn54zjvvD/f7%2BczRm%2B//bbatWsnSVq0aJEmTZpUMW%2B1WuXl5VWxRF1QUKBbt25VWcq2WCwaPHiwlixZosDAQLVq1Up/%2B9vf1K5dO8XExNQ4D0UkAACAA5g8ebKuXLmipKQkubm5KT4%2BXhMnTqyYj4%2BP16hRoyoe4rly5YokycfHp8r3evXVV%2BXu7q7p06fr5s2bCg8P18qVK%2BXm5lbjPBabzWar3T8JDmH3btMJ8Cje3lK/flJ2tnTzpuk0qM7gwaYToDp9%2Bkg5OVLfvtJXX5lOg0cxVIY88UTdfN99%2B%2Brm%2BzZEdCIBAIDLccTl7IaGB2sAAABgNzqRAADA5dCJrD06kQAAALAbnUgAAOBy6ETWHkUkAABwORSRtcdyNgAAAOxGJxIAALgcOpG1RycSAAAAdqMTCQAAXA6dyNqjiAQAAC6HIrL2WM4GAACA3ehEAgAAl0MnsvboRAIAAMBudCIBAIDLoRNZexSRAADA5VBE1h7L2QAAALAbnUgAAOBy6ETWHp1IAAAA2I1OJAAAcDl0ImuPIhIAALgcisjaYzkbAAAAdqMTCQAAXA6dyNqjEwkAAAC70YkEAAAuh05k7VFEAgAAl0MRWXssZwMAAMBudCIBAIDLoRNZexSRAADA5VBE1h7L2QAAALAbnUgAAOBy6ETWHp1IAAAA2I1OJAAAcDl0ImuPIhIAALgcisjaYzkbAAAAdqMTCQAAXA6dyNqjEwkAAAC70YkEAAAuh05k7VFEAgAAl0MRWXssZwMAAMBudCIBAIDLoRNZe3QiAQAAHIjNZtOkSZO0adOmaq87d%2B6cJk6cqLCwMA0bNkwZGRmV5jMzMzV8%2BHCFhoYqMTFR586dsysHRSQAAHA55eV181H3ucv15ptvau/evdVeZ7PZ9MILL8jPz08bN27UyJEjlZSUpMLCQklSYWGhXnjhBcXFxemjjz5Sq1at9Ic//EE2m63GWVjOBgAALscRl7OLioo0Y8YMnT9/Xi1atKj22qysLJ07d07p6elq2rSpunTpon379mnjxo2aNm2aNmzYoF69emnSpEmSpNTUVEVGRmr//v0aOHBgjfLQiQQAAHAAubm5CggI0MaNG9W8efNqrz18%2BLB69uyppk2bVoz169dPhw4dqpjv379/xVyTJk302GOPVczXBJ1IAADgcuqqE3nx4kVdunSp0pi/v7/atGlT6%2B8dGxur2NjYGl176dKlKj%2BzdevWunDhQo3ma4Ii0lXExJhOgEe4ePGi1i9ZotGjR/8k/9mgDtlxzxDqX8Vraft2Xkt4qLp6GS9Zsl5paWmVxpKSkjRt2rRHfu2dO3dUVFT0o3P%2B/v6VuoqPcvv2bXl6elYa8/T01N27d2s0XxMUkUADcenSJaWlpSk2NpY3PqAWeC3BpNGjR1fpFvr7%2B9foaw8fPqzExMQfnVu6dKmGDh1a4xxeXl4qLi6uNHb37l01bty4Yv6HBePdu3cfea/l91FEAgAA/ETatGnzP//yMnDgQOXn5/8kOdq2bav//ve/lcYuX75cka1t27a6fPlylfkePXrU%2BGfwYA0AAICTCQ0NVW5uru7cuVMxlp2drdDQ0Ir57Ozsirnbt2/r2LFjFfM1QREJAADgBKxWq27duiVJevzxxxUQEKDk5GSdPHlSK1eu1JEjRxQfHy9J%2Bu1vf6ucnBytXLlSJ0%2BeVHJysjp06FDj7X0kikigwfD391dSUlKN750B8ON4LcFVxcfHa/Xq1ZIkNzc3LVu2TJcuXVJcXJy2bNmipUuXqn379pKkDh06aMmSJdq4caPi4%2BNVXFyspUuXymKx1PjnWWz2bE0OAAAAiE4kAAAA/gcUkQAAALAbRSQAAADsRhEJAAAAu1FEAgAAwG4UkQAAALAbRSQAAADsRhEJAAAAu1FEAgAAwG4UkQAAp2Cz2WS1WlVcXGw6CuAS3E0HAFzVN998o4yMDOXm5spqtcpiscjf3189e/bUoEGDFBgYaDoi0OB99913Sk9P1549e5Sfn6/y8nJJ/39u8IPXUlxcXMV5wQB%2BOpydDdSzAwcOaOnSpcrOzlbv3r3VtWtXtWzZUuXl5bp69ary8/OVn5%2BvAQMGaMqUKQoPDzcdGWhwrFarFi5cqM8%2B%2B0wRERGKiIj40ddSTk6OvvjiCw0ZMkSzZs1S69atTUcHnAZFJFCPZsyYoaKiIo0ZM0aDBg2St7f3j15XUlKif//731q/fr0CAwO1aNGiek4KNGxxcXFKSEjQ8OHD5eHhUe21t2/f1pYtW/Thhx9q8%2BbN9ZQQcH4UkUA9yszMVEREhF1fk5GRoaioqDpKBDime/fuPbJ4/Cm%2BBsDDUUQCDYjVapWvr68sFovpKAAAVIunswFDioqK9MorrygvL0%2BlpaUaP368IiMjFRsbq%2BPHj5uOBziM48eP63e/%2B53CwsLUo0ePKh8A6gZPZwOGzJ8/XyUlJWrZsqU2bdqkEydOKD09XVu2bNEf//hHffDBB6YjAg4hOTlZPj4%2BWrRokZo3b246DuAyKCIBQ7KysrRp0yYFBARo586d%2BuUvf6nQ0FC1atVKw4cPNx0PcBinTp3S1q1b1alTJ9NRAJfCcjZgiJeXl0pLS3Xt2jV9%2BeWXGjx4sCTp/Pnz8vHxMRsOcCA9e/bU6dOnTccAXA6dSMCQoUOH6uWXX1bjxo3l4%2BOjwYMHa9u2bUpJSdGoUaNMxwMatO9v1dO3b1/Nnj1bY8aMUVBQkNzc3Cpd%2B5vf/Ka%2B4wEugaezAUPu37%2BvtWvXqqCgQKNHj1bXrl21efNm3bx5U%2BPGjeMJbaAasbGxNbrOYrFo165ddZwGcE0UkQAAp1NaWiovLy/TMQCnRhEJGHL9%2BnWtXr1aX3/9te7fv68fvhTXrFljKBngWK5du6a5c%2BeqW7duSkpKkiTFxMSob9%2B%2BeuONN3hiG6gjFJGAIVOnTtXXX3%2BtESNG/Ojxhw/eDAFU76WXXtKVK1f0%2Buuvq0uXLpKkvLw8paSkqH379nrrrbcMJwScE0UkYEhISIjWrl2rkJAQ01EAh9a/f3%2BtX7%2B%2BooB84OTJkxo3bpz2799vKBng3NjiBzCkbdu2atSIlyBQW40bN9aFCxeqjFutVrm7swkJUFfc5s%2BfP990CMAVBQQEaNGiRWrXrp0kqaSkRDdu3Kj44D4uoGaKi4u1bNky%2Bfr6ys3NTVarVZmZmUpJSdGwYcMUFRVlOiLglFjOBgzp3r17pb8/2NLHZrPJYrEoLy/PRCzA4ZSVlWnx4sXasGGDiouLJUm%2Bvr5KSEjQlClT6EYCdYQiEjCkoKCg2vnAwMB6SgI4D6vVKg8PDzr5QD3g1zPAkAdF4uXLl3X37l3DaQDHdvbsWR09elT37t2rMseJNUDdoBMJGLJ9%2B3bNmzdP169frzTOcjZgn1WrVuntt9%2BWj4%2BPmjVrVmmOE2uAukMRCRgSExOj2NhYjR8/Xo0bN64yz3I2UDMRERGaPHmyJk%2BebDoK4FJYzgYMKSkpUWJiooKDg01HARxaaWmpnnzySdMxAJfDJnWAIWPHjtW7777L/ZBALY0YMULr1q2rcnQogLrFcjZgSF5eniZMmKA7d%2B7Iz8%2BvYoufB7iPC6iZGTNmaPv27fL19VWHDh3k4eFRaZ5z6IG6wXI2YMirr76qbt26afjw4T96TySAmuncubOmTp1qOgbgcuhEAoaEhYVp69atCgoKMh0FAAC70YkEDBkyZIgyMzM1evRo01EAh5OcnKw5c%2BbI29tbycnJ1V6bmppaT6kA10IRCRgSGBioBQsWaPPmzQoKCpKbm1uled74AAANGcvZgCF0TwAAjowiEgDgcCZMmKCkpCQNGDCgRtdnZmZq%2BfLlev/99%2Bs4GeA6KCIBQ9LS0qqdT0pKqqckgOM5efKk3njjDV25ckVDhw5VRESEunTpIl9fX5WXl%2Bvq1avKz89Xdna2tm3bJn9/f82bN0%2B/%2BMUvTEcHnAZFJGBIQkJCpb%2BXlZXp/Pnzun79un71q1/prbfeMpQMcBwHDhxQenq6MjIyqpxD37JlS0VGRurZZ5/V448/bigh4LwoIoEGJiUlRRaL5ZH3TAKo7Pz587JarbJYLPLz81NAQIDpSIBTo4gEGphz584pLi5OBw4cMB0FAICH4uxsoIHZvXu3vLy8TMcAAKBa7BMJGBIbG1vlvOxbt27p2rVrmjVrlqFUAADUDMvZgCGbNm2qVERaLBZ5eHioV69e6tSpk8FkAAA8GkUkAMChJSYmKi0tTS1atKg0brVa9dxzz2nTpk2GkgHOjeVsoB4lJCRUWcJ%2BmDVr1tRxGsBxffHFFzpy5Iik/9/mZ8WKFWratGmla86ePauCggIT8QCXQBEJ1KOBAweajgA4heDgYK1atUo2m002m005OTny8PComLdYLGratKkWLFhgMCXg3FjOBhqAmzdvqqysTD4%2BPqajAA4nOTlZc%2BbMkbe3t%2BkogEuhiAQMeu%2B997Rq1SpdvnxZktSqVSuNGTOGIw%2BB/4HValVpaal%2B%2BLbWvn17Q4kA58ZyNmDI0qVLtXbtWr300kvq06ePysvLlZOTo7S0NHl6emrKlCmmIwIOYd%2B%2BfZo5c2bFL2M2m00Wi6Xiz7y8PMMJAedEJxIwJCYmRvPmzVNsbGyl8Z07d2rBggX6/PPPDSUDHMuvf/1r9erVS88995yaN29eZT4wMNBAKsD50YkEDLl586Y6d%2B5cZTw4OFhWq7X%2BAwEOqrCwUO%2B8846CgoJMRwFcCsceAob06dNHq1evVnl5ecVYWVmZVq9erZCQEIPJAMcycOBAZWdnm44BuByWswFDTp06pXHjxqlp06Z67LHHJElHjx7V3bt39Y9//EPdu3c3nBBouNLS0io%2BLyoq0scff6wnn3xSHTt2VKNGlfsjPKgG1A2KSMCgq1ev6pNPPtGpU6fk5eWl4OBgjRgxQs2aNTMdDWjQEhISanSdxWJh436gjlBEAgbt3r1bjRo1UnR0tCRpwYIFio6O1qBBgwwnAwCgejxYAxjy/vvv669//atee%2B21ijF3d3e9/PLLmj17tp599lmD6QDH8f2l7e%2BzWCzy8PBQmzZtFB0drdatW9dzMsC50YkEDImNjdVrr72mIUOGVBrftWuXUlNTtXPnTkPJAMcyffp0bdu2Te3atVOvXr1ks9mUl5enwsJChYWF6caNG7pw4YJWrVqlsLAw03EBp0EnEjDk6tWr6tixY5Xx4ODgik2TAdRMfHy85s%2BfLzc3N0lSeXm5FixYoJKSEqWmpmrFihX605/%2BpPT0dMNJAefBFj%2BAIf369dOSJUt0%2B/btirHS0lKtWLFCffr0MZgMcCyfffaZJk2aVFFASlKjRo00fvx4bd%2B%2BXZL09NNP6/jx46YiAk6JTiRgyNy5czVp0iRFRUVVbDr%2B7bffys/PT8uWLTMbDnAgfn5%2BOnjwoIKDgyuNZ2dnq2XLlpKky5cvy9vb20Q8wGlRRAKGdOzYUdu2bdOePXv0zTffyN3dXZ07d1ZUVFSljgqA6k2bNk1z5sxRdna2evfuLZvNptzcXH366aeaO3euzpw5o1mzZunpp582HRVwKjxYA9Sjffv26YknnrDrazIzMxUREVFHiQDncPDgQX344Yc6ceKE3Nzc1LVrV40fP15hYWE6cuSIDh06pHHjxvELGvAToogE6tH06dN18eJFjRkzRjExMQ/dVPz27dvasWOH0tPTFRAQoL/85S/1nBQAgOpRRAL1LCsrS8uXL9dXX32lkJAQ/exnP5Ovr6/Ky8tVXFys/Px8HT9%2BXGFhYfr973%2BvyMhI05GBBic5OVlz5syRt7e3kpOTq702NTW1nlIBroV7IoF6Fh4ervDwcJ0%2BfVoZGRk6duyY8vLyZLFY1Lp1az3zzDNauHChOnXqZDoqAAAPRScSAAAAdmOfSACAw8vOztaLL76okSNH6rvvvtPKlSv16aefmo4FODWKSACAQ9uxY4emTJmiwMBAnTlzRvfv35e7u7tmz56tdevWmY4HOC2WswEADu2ZZ57R888/rxEjRqhPnz7asmWLgoKCtHXrVv3973/Xf/7zH9MRAadEJxIA4NDOnj2rsLCwKuMhISEqKioykAhwDTydDRiUkZGh48ePq7S0VD9cFEhKSjKUCnAsXbt21Z49ezR27NhK4//617/UtWtXQ6kA50cRCRjy5z//We%2B%2B%2B666d%2B9e5Uxfi8ViKBXgeJKTkzV16lRlZWXp3r17WrFihc6ePaujR49q%2BfLlpuMBTot7IgFDBgwYoNdff13Dhg0zHQVweJcuXdK6det06tQplZWVKTg4WGPHjlX79u1NRwOcFkUkYEh4eLjWr1/PpuIAAIdEEQkYkpaWpjNnziglJUVeXl6m4wAO68aNG3rnnXceen/xmjVrDCUDnBv3RAL1KDY2tuJ%2BR5vNpsLCQu3YsUN%2Bfn5q1KjyZgm7du0yERFwODNnzlRubq6eeuopNW/e3HQcwGVQRAL1aNq0aaYjAE5n3759WrNmjUJCQkxHAVwKRSRQj0aNGlXxeVpamiZPnqwmTZpUuubmzZtKS0ur72iAw/L395ebm5vpGIDL4Z5IoB6dPn1aV65ckSQlJiZqyZIl8vHxqXTNiRMntHDhQh06dMhERMAhFBYWVny%2BY8cOffzxx5o5c6Y6dOhQpaDkCW2gblBEAvUoKytLEydOrPaaJk2aKDExUa%2B88kr9hAIcUPfu3SvdX/zA9/dYtdlsslgsysvLq/d8gCugiAQMiY2N1UcffaRWrVqZjgI4nIKCghpfGxgYWIdJANdFEQkAAAC78WANUI%2B%2Bv8XPo7DFDwCgIaOIBOrR97f4%2Bfbbb/Xee%2B9pzJgx6t27tzw8PHTs2DGtXbtWEyZMMJgSAIBHYzkbMCQuLk7PP/%2B8nnrqqUrjO3fu1OLFi/XJJ58YSgYAwKM1evQlAOrCmTNn9POf/7zKeFBQkF0PDQAAYAJFJGBIv379lJKSoqKiooqxc%2BfO6c0331R0dLTBZAAAPBrL2YAhFy9e1IsvvqjDhw/Lx8dHNptN169fV3h4uBYvXlxlE3IAABoSikjAsJMnT%2BrUqVOSpG7duqlLly6GEwEA8GgUkUA9KiwsVEBAgCwWS6Vj234MR7UBABoyikigHnXv3l179%2B5V69atK45te3A02wMc1QYAcAQUkUA9KigoUPv27WWxWB75BDZHtQEAGjKKSMCQcePGadCgQYqOjlbPnj1NxwEAwC4UkYAh//znP7V37159%2BeWXcnNzU2RkpKKjoxUVFSVfX1/T8QAAqBZFJGCYzWbTsWPHtG/fPu3du1cHDhxQjx49tGHDBtPRAAB4KM7OBgwqKytTbm6ucnJydPjwYZ04cUKenp5q0aKF6WgAAFSLTiRgSEJCgo4ePaoWLVooNDRUffv2Vf/%2B/dWzZ081asRhUgCAho13KsAQd3d3WSwW%2Bfr6qk2bNmrbtq3atm1LAQkAcAh0IgGD7t%2B/r9zcXB04cEAHDx7UoUOH1Lx5c/Xv31%2Bpqamm4wEA8FDcEwkY5O7urtDQUDVr1kxNmjSRp6enPv/8c2VlZZmOBgBAtehEAoZ88MEH2r9/vw4ePKiSkhINGDBAkZGRioqK4vxsAECDRxEJGDJy5EhFRUUpKipK/fr1k6enp%2BlIAADUGEUkAAAA7MZjoAAAALAbRSQAAADsRhEJAAAAu1FEAgAAwG4UkQAAALAbRSQAAADsRhEJAAAAu/0f0pd%2BG%2BsVCqAAAAAASUVORK5CYII%3D" class="center-img">
+</div>
+    <div class="row headerrow highlight">
+        <h1>Sample</h1>
+    </div>
+    <div class="row variablerow">
+    <div class="col-md-12" style="overflow:scroll; width: 100%%; overflow-y: hidden;">
+        <table border="1" class="dataframe sample">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Date</th>
+      <th>News</th>
+      <th>Type of visualizaton</th>
+      <th>Content it is depicting</th>
+      <th>page no.(location)</th>
+      <th>quadrant</th>
+      <th>width (columns)</th>
+      <th>height (inch)</th>
+      <th>colour/ b&amp;w(treatment)</th>
+      <th>photograph</th>
+      <th>illustration</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Dec-01</td>
+      <td>12000 people get the gift of housing</td>
+      <td>map, jumbo figures</td>
+      <td>development</td>
+      <td>2</td>
+      <td>1</td>
+      <td>2.0</td>
+      <td>3.0</td>
+      <td>colour</td>
+      <td>no</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Dec-01</td>
+      <td>More than 80000 flats to be constructed in 5 y...</td>
+      <td>table, jumbo figures</td>
+      <td>development</td>
+      <td>2</td>
+      <td>4</td>
+      <td>1.0</td>
+      <td>5.0</td>
+      <td>colour</td>
+      <td>no</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Dec-01</td>
+      <td>Weather</td>
+      <td>icons</td>
+      <td>weather</td>
+      <td>3</td>
+      <td>2</td>
+      <td>2.0</td>
+      <td>1.0</td>
+      <td>colour</td>
+      <td>no</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Dec-01</td>
+      <td>Petrol/diesel prices</td>
+      <td>table</td>
+      <td>economic</td>
+      <td>3</td>
+      <td>1</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>colour</td>
+      <td>yes</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Dec-01</td>
+      <td>Electricity even more expensive in UP</td>
+      <td>table</td>
+      <td>economic</td>
+      <td>8</td>
+      <td>1</td>
+      <td>1.2</td>
+      <td>2.0</td>
+      <td>b&amp;w</td>
+      <td>yes</td>
+      <td>no</td>
+    </tr>
+  </tbody>
+</table>
+    </div>
+</div>
+</div>
+</body>
+</html>
